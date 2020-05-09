@@ -32,7 +32,7 @@ app.use(function (err, req, res, next) {
   res.status(statusCode).send('View error log on console.');
 })
 
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, _ => {
   console.log(`API is running at http://localhost:${PORT}`);
 })

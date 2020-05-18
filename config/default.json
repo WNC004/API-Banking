@@ -18,6 +18,10 @@
   "bankingAuth": {
         "secret": "secretKey",
         "partnerKey": "123"
+  },
+  "PGPkey": {
+    "publicKeyB": "",
+    "privateKeyB": ""
   }
 }
 

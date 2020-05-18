@@ -5,9 +5,20 @@ const router = express.Router();
 
 // const verify = require('../middlewares/auth.mdw');
 const verifyAcc = require('../middlewares/acc.mdw');
+const verifyPGPTransfer = require('../middlewares/pgp-transfer.mdw');
 
 
-router.get('/', verifyAcc ,async (req,res) => {
+// router.get('/', verifyAcc ,async (req,res) => {
+
+//     const results = await userModel.singleByUserID(req.body.userID);
+
+//     delete results.password_hash;
+
+
+//     res.json(results);
+// })
+
+router.get('/', verifyPGPTransfer ,async (req,res) => {
 
     const results = await userModel.singleByUserID(req.body.userID);
 
@@ -16,6 +27,8 @@ router.get('/', verifyAcc ,async (req,res) => {
 
     res.json(results);
 })
+
+
 
 // router.get('/', verify ,async (req,res) => {
 //     const results = await userModel.singleByUserID(req.body.userID);

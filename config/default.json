@@ -1,10 +1,11 @@
 {
   "mysql": {
     "connectionLimit": 100,
-    "host"    : "db4free.net",
-    "user"    : "WNC004",
-    "password": "P@ssword123456",
-    "database": "WNC004"
+    "host"    : "localhost",
+    "port": 8889,
+    "user"    : "root",
+    "password": "root",
+    "database": "internet-banking"
   },
   "auth": {
     "secret": "secretKey",

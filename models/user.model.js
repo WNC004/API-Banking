@@ -17,12 +17,12 @@ module.exports = {
         return db.add(entity, 'users');
     },
 
-    // singleByUserName: userName => db.load(`select * from users where username = '${userName}'`),
-    singleByUserName: userName => db.load(`select * from customers where username = '${userName}'`),
+    singleByUserName: userName => db.load(`select * from users where username = '${userName}'`),
 
-    // singleByUserID: userID => db.load(`select * from users where id = ${userID}`),
+    singleByUserID: userID => db.load(`select * from users where id = ${userID}`)
 
-    singleByUserID: userID => db.load(`select * from customers where ID = ${userID}`)
+    // singleByUserID: userID => db.load(`select * from customers where ID = ${userID}`),
+    // singleByUserName: userName => db.load(`select * from customers where username = '${userName}'`)
 
 
 

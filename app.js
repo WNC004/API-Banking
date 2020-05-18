@@ -19,6 +19,7 @@ app.get('/', (req, res) => {
 
 app.use('/api/auth', require('./routes/auth.route'));
 app.use('/api/customers', require('./routes/customer.route'));
+app.use('/api/users', require('./routes/user.route'));
 app.use('/api/bank', require('./routes/tranfer.route'));
 
 app.use((req, res, next) => {

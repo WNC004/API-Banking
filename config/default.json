@@ -13,6 +13,10 @@
     "pgpPublicKey":"xm8EXrUUKBMFK4EEACIDAwQvNEDRmAnvXquRh8d1r8Zus7Bk1A7gxKj+/ykQBsaA",
     "pgpPrivateKey": "xcASBF61FCgTBSuBBAAiAwMELzRA0ZgJ716rkYfHda/GbrOwZNQO4MSo/v8pEAbG",
     "passphrase": "P@ssword123456"
+  },
+  "bankingAuth": {
+        "secret": "secretKey",
+        "partnerKey": "123"
   }
 }
 

@@ -18,7 +18,7 @@ const verifyPGPTransfer = require('../middlewares/pgp-transfer.mdw');
 //     res.json(results);
 // })
 
-router.get('/', verifyPGPTransfer ,async (req,res) => {
+router.get('/', verifyPGPTransfer , async (req,res) => {
 
     const results = await userModel.singleByUserID(req.body.userID);
 

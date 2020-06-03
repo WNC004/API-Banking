@@ -2,7 +2,7 @@
   "mysql": {
     "connectionLimit": 100,
     "host"    : "db4free.net",
-    "user"    : "WNC004",
+    "user"    : "wnc004",
     "password": "P@ssword123456",
     "database": "WNC004"
   },

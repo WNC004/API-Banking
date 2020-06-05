@@ -107,6 +107,7 @@ module.exports = async function (req, res, next) {
     // } else {
     //     throw new Error('signature could not be verified');
     // }
+    
     if (req.headers['partner-code'] !== config.bankingAuth.partnerKey) {
         throw createError(400, 'Invalid partner code!');
     }

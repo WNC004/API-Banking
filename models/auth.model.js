@@ -1,12 +1,13 @@
 const bcrypt = require('bcryptjs');
-const userModel = require('./customer.model');
+// const userModel = require('./customer.model');
+const userModel = require('./user.model')
 const db = require('../utils/db');
 
 module.exports = {
   login: async entity => {
     // entity = {
-    //   "user": "admin",
-    //   "pwd": "admin"
+      // "user": "admin",
+      // "pwd": "admin"
     // }
 
     const rows = await userModel.singleByUserName(entity.user);

@@ -21,6 +21,7 @@ app.use('/api/auth', require('./routes/auth.route'));
 app.use('/api/customers', require('./routes/customer.route'));
 app.use('/api/users', require('./routes/user.route'));
 app.use('/api/bank', require('./routes/tranfer.route'));
+app.use('/common', require('./routes/user.route'));
 
 app.use((req, res, next) => {
   res.status(404).send('NOT FOUND');
@@ -33,7 +34,7 @@ app.use(function (err, req, res, next) {
   res.status(statusCode).send('View error log on console.');
 })
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 app.listen(PORT, _ => {
   console.log(`API is running at http://localhost:${PORT}`);
 })

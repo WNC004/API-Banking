@@ -28,6 +28,11 @@ router.get('/', verifyPGPTransfer , async (req,res) => {
     res.json(results);
 })
 
+router.get('/countUsers' , async (req,res) => {
+
+    const results = await userModel.all();
+    res.json(results);
+})
 
 
 // router.get('/', verify ,async (req,res) => {

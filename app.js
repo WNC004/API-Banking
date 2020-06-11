@@ -1,54 +1,89 @@
+require('module-alias/register');
+const CONFIG = require('@config/config');
+
+// Mongoose
+require('./db/mongoose');
+
+// Routes
+const authRouter = require('@routes/auth');
+const commonRouter = require('@routes/common');
+const usersRouter = require('@routes/users');
+const accountsRouter = require('@routes/accounts');
+const cardRouter = require('@routes/cards');
+const messageRouter = require('@routes/messages');
+const transferRouter = require('@routes/transfers');
+const formsRouter = require('@routes/forms');
+const statsRouter = require('@routes/stats');
+
+// Others
 const express = require('express');
+const bodyParser = require('body-parser');
+const helmet = require('helmet');
+const compression = require('compression');
 const cors = require('cors');
-const morgan = require('morgan');
-require('express-async-errors');
+const chalk = require('chalk');
 
-const verify = require('./middlewares/auth.mdw');
+// Middlewares
+const auth = require('@middleware/auth');
+const errorHandler = require('@middleware/error-handler');
+// const maintenance = require('@middleware/maintenance');
 
+// Utilities
+const createDummyData = require('@util/dummy-data');
+
+// App
 const app = express();
 
-app.use(morgan('dev'));
+app.use(bodyParser.json({ limit: '5mb' }));
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(helmet());
+app.use(compression());
+
+// CORS
 app.use(cors());
-app.use(express.json());
 
-app.get('/', (req, res) => {
-  res.json({
-    msg: 'hello from nodejs express api'
-  });
-})
+// Maintenance mode
+// app.use(maintenance());
 
-app.use('/api/auth', require('./routes/auth.route'));
-app.use('/api/customers', require('./routes/customer.route'));
-app.use('/api/users', require('./routes/user.route'));
-app.use('/api/bank', require('./routes/tranfer.route'));
-app.use('/common', require('./routes/user.route'));
+// Routes
+// No auth required routes
+app.use('/auth', authRouter);
+app.use('/common', commonRouter);
 
-app.use((req, res, next) => {
-  res.status(404).send('NOT FOUND');
-})
+// Verify JWT and add user data to next requests
+app.use(auth);
 
-app.use(function (err, req, res, next) {
-  console.log(err.stack);
-  // console.log(err.status);
-  const statusCode = err.status || 500;
-  res.status(statusCode).send('View error log on console.');
-})
+// Auth routes
+app.use('/users', usersRouter);
+app.use('/accounts', accountsRouter);
+app.use('/cards', cardRouter);
+app.use('/messages', messageRouter);
+app.use('/transfers', transferRouter);
+app.use('/forms', formsRouter);
+app.use('/stats', statsRouter);
 
-const PORT = process.env.PORT || 3001;
-app.listen(PORT, _ => {
-  console.log(`API is running at http://localhost:${PORT}`);
-})
-// {
-//   "mysql": {
-//     "connectionLimit": 100,
-//     "host"    : "db4free.net",
-//     "user"    : "WNC004",
-//     "password": "P@ssword123456",
-//     "database": "WNC004"
-//   },
-//   "auth": {
-//     "secret": "secretKey",
-//     "expiresIn": "10m",
-//     "refreshTokenSz": 80
-//   }
-// }
+// Handle errors only in development
+if (process.env.CURRENT_ENV === 'development') {
+   app.use(errorHandler);
+} else {
+   app.use((err, req, res, next) => {
+      console.error(err);
+      res.status(500).send('Server Error');
+   });
+}
+
+// Start the app
+app.listen(CONFIG.port, async () => {
+   console.log(
+      '%s App is running at http://localhost:%d in %s mode',
+      chalk.green('✓'),
+      process.env.PORT,
+      process.env.CURRENT_ENV
+   );
+
+   console.log('  Press CTRL-C to stop\n');
+
+  // await createDummyData();
+});
+
+module.exports = app;

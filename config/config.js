@@ -9,7 +9,7 @@ CONFIG.current_env = process.env.CURRENT_ENV || 'production';
 CONFIG.port = process.env.PORT || '3001';
 
 // Database
-CONFIG.mongodb_uri = 'mongodb+srv://admin:P@ssword123456@cluster0-ffdnj.mongodb.net/react-bank-api?retryWrites=true&w=majority';
+CONFIG.mongodb_uri = process.env.MONGODB_URI || 'mongodb+srv://admin:P@ssword123456@cluster0-ffdnj.mongodb.net/react-bank-api?retryWrites=true&w=majority';
 
 // JWT
 CONFIG.jwt_secret_key =

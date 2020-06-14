@@ -7,7 +7,7 @@ const crypto = require('crypto');
 const cryptoJS = require('crypto-js')
 var _ = require("lodash");
 
-const config = req('../config/default.json');
+const config = require('../config/default.json');
 const verifyConnect = require('../middlewares/verifyConnect.mdw');
 var router = express.Router();
 

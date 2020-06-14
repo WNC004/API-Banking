@@ -1,0 +1,19 @@
+{
+    "mysql": {
+        "connectionLimit": 100,
+        "host": "localhost",
+        "port": 3306,
+        "user": "root",
+        "password": "",
+        "database": "banking"
+    },
+    "auth": {
+        "secret": "secretKey",
+        "expiresIn": "10m",
+        "refreshTokenSz": 80
+    },
+    "bankingAuth": {
+        "secret": "secretKey",
+        "partnerKey": "123"
+    }
+}

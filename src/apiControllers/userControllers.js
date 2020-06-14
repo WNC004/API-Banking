@@ -1,4 +1,11 @@
+const createError = require('http-errors');
+const jwt = require('jsonwebtoken');
+const moment = require('moment');
+const bcrypt = require('bcryptjs');
+const crypto = require('crypto');
+const cryptoJS = require('crypto-js')
 var express = require("express");
+
 var router = express.Router();
 
 router.post("/me", (req, res) => {

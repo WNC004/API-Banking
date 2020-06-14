@@ -1,89 +1,77 @@
-require('module-alias/register');
-const CONFIG = require('@config/config');
+var express = require("express"),
+  app = express();
 
-// Mongoose
-require('./db/mongoose');
+var bodyParser = require("body-parser"),
+  morgan = require("morgan"),
+  cors = require("cors");
 
-// Routes
-const authRouter = require('@routes/auth');
-const commonRouter = require('@routes/common');
-const usersRouter = require('@routes/users');
-const accountsRouter = require('@routes/accounts');
-const cardRouter = require('@routes/cards');
-const messageRouter = require('@routes/messages');
-const transferRouter = require('@routes/transfers');
-const formsRouter = require('@routes/forms');
-const statsRouter = require('@routes/stats');
+var nodemailer = require("./nodemailer");
 
-// Others
-const express = require('express');
-const bodyParser = require('body-parser');
-const helmet = require('helmet');
-const compression = require('compression');
-const cors = require('cors');
-const chalk = require('chalk');
+// server nodejs START
 
-// Middlewares
-const auth = require('@middleware/auth');
-const errorHandler = require('@middleware/error-handler');
-// const maintenance = require('@middleware/maintenance');
+// Controllers START
 
-// Utilities
-const createDummyData = require('@util/dummy-data');
+var authCtrl = require("./src/apiControllers/authControllers");
 
-// App
-const app = express();
+var payAccCtrl = require("./src/apiControllers/payAccControllers");
 
-app.use(bodyParser.json({ limit: '5mb' }));
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(helmet());
-app.use(compression());
+var historyCtrl = require("./src/apiControllers/historyControllers");
 
-// CORS
+var contactCtrl = require("./src/apiControllers/contactControllers");
+
+var userCtrl = require("./src/apiControllers/userControllers");
+
+var customerCtrl = require("./src/apiControllers/customerControllers");
+
+// Controllers END
+
+var verifyAccessToken = require("./src/repos/authRepo").verifyAccessToken;
+
+app.use(morgan("dev"));
+app.use(bodyParser.json());
+app.use(
+  bodyParser.urlencoded({
+    extended: true
+  })
+);
 app.use(cors());
 
-// Maintenance mode
-// app.use(maintenance());
+app.use("/auth", authCtrl);
+app.use("/user", verifyAccessToken, userCtrl);
 
-// Routes
-// No auth required routes
-app.use('/auth', authRouter);
-app.use('/common', commonRouter);
+app.post("/send-otp", verifyAccessToken, (req, res) => {
+  const { clientEmail, clientName } = req.body;
+  const otp = require("rand-token")
+    .generator({
+      chars: "numeric"
+    })
+    .generate(6);
 
-// Verify JWT and add user data to next requests
-app.use(auth);
-
-// Auth routes
-app.use('/users', usersRouter);
-app.use('/accounts', accountsRouter);
-app.use('/cards', cardRouter);
-app.use('/messages', messageRouter);
-app.use('/transfers', transferRouter);
-app.use('/forms', formsRouter);
-app.use('/stats', statsRouter);
-
-// Handle errors only in development
-if (process.env.CURRENT_ENV === 'development') {
-   app.use(errorHandler);
-} else {
-   app.use((err, req, res, next) => {
-      console.error(err);
-      res.status(500).send('Server Error');
-   });
-}
-
-// Start the app
-app.listen(CONFIG.port, async () => {
-   console.log(
-      '%s App is running at http://localhost:%d in %s mode',
-      chalk.green('✓'),
-      process.env.PORT,
-      process.env.CURRENT_ENV
-   );
-
-   console.log('  Press CTRL-C to stop\n');
-
-  // await createDummyData();
+  const verifyEntity = {
+    clientEmail,
+    clientName,
+    otp
+  };
+  nodemailer.sendMail(verifyEntity);
+  res.statusCode = 201;
+  res.json({ otp: otp });
 });
 
-module.exports = app;
+// app.use("/", payAccCtrl);
+app.use("/", verifyAccessToken, payAccCtrl);
+
+// app.use("/", historyCtrl);
+app.use("/", verifyAccessToken, historyCtrl);
+
+// app.use("/", contactCtrl);
+app.use("/", verifyAccessToken, contactCtrl);
+
+// app.use("/", customerCtrl);
+app.use("/", verifyAccessToken, customerCtrl);
+
+const PORT = process.env.PORT || 3001;
+app.listen(PORT, () => {
+  console.log(`Banking Express is running on port ${PORT}`);
+});
+
+// server nodejs END

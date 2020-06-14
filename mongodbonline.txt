@@ -1,2 +1,0 @@
-online: mongodb+srv://admin:P@ssword123456@cluster0-ffdnj.mongodb.net/react-bank-api?retryWrites=true&w=majority
-local: mongodb://127.0.0.1:27017/react-bank-api

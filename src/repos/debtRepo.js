@@ -3,7 +3,7 @@ var db = require("../fn/mysql-db");
 exports.add = debtEntity => {
   const {
     id,
-    customer_id,
+    debtor_id,
     account,
     name_debtors,
     amount,
@@ -11,17 +11,23 @@ exports.add = debtEntity => {
     status,
     reason_deleted,
     type,
-    createdAt
+    createdAt,
+    creditor_id
   } = debtEntity;
 
   const sql =
-    "insert into `debt`(`id`, `customer_id`, `account`, `name_debtors`, `amount`, `message`, `status`,`reason_deleted`, `type`, `createdAt`)" +
-    `values('${id}', '${customer_id}','${account}', '${name_debtors}', '${amount}', '${message}', '${status}', '${reason_deleted}', '${type}', '${createdAt}');`;
+    "insert into `debt`(`id`, `debtor_id`, `account`, `name_debtors`, `amount`, `message`, `status`,`reason_deleted`, `type`, `createdAt`, `creditor_id`)" +
+    `values('${id}', '${debtor_id}','${account}', '${name_debtors}', '${amount}', '${message}', '${status}', '${reason_deleted}', '${type}', '${createdAt}', '${creditor_id}');`;
   return db.save(sql);
 };
 
 exports.loadByCustomerId = customerId => {
-  var sql = `select * from debt where customerId = '${customerId}' and status='1'`;
+  var sql = `select * from debt where creditor_id = '${customerId}' and status='1'`;
+  return db.load(sql);
+};
+
+exports.loadByDebtor = customerId => {
+  var sql = `select * from debt where debtor_id = '${customerId}' and status='1'`;
   return db.load(sql);
 };
 

@@ -25,6 +25,8 @@ var customerCtrl = require("./src/apiControllers/customerControllers");
 
 var debtCtrl = require("./src/apiControllers/debtControllers");
 
+var staffCtrl = require("./src/apiControllers/staffControllers");
+
 // Controllers END
 
 var verifyAccessToken = require("./src/repos/authRepo").verifyAccessToken;
@@ -73,6 +75,9 @@ app.use("/", verifyAccessToken, customerCtrl);
 
 // app.use("/", debtCtrl);
 app.use("/", verifyAccessToken, debtCtrl);
+
+// app.use("/", staffCtrl);
+app.use("/", verifyAccessToken, staffCtrl);
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {

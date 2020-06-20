@@ -1,4 +1,5 @@
 var db = require("../fn/mysql-db");
+var md5 = require("crypto-js/md5");
 
 exports.getCustomers = () => {
   const sql = `select f_id as customerId, f_email as email, f_name as name, f_phone as phone, f_createdAt as createdAt from users where f_type = 1`;
@@ -10,3 +11,8 @@ exports.getCustomerByAccount = account => {
   return db.load(sql);
 };
 
+exports.changePassword = (newPassWord, id) => {
+  var md5_pwd = md5(newPassWord);
+  var sql = `update users set f_password = '${md5_pwd}'  where f_id = '${id}'`;
+  return db.load(sql);
+};

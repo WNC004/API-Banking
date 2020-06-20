@@ -62,4 +62,23 @@ router.get("connect-bank/:userId", verifyConnect ,async (req,res) => {
   res.json(results);
 });
 
+router.post("/customer/change-password", (req, res) => {
+  var newPassword = req.body.newPassword;
+  var id = req.body.id;
+  customerRepo
+    .changePassword(newPassword, id)
+    .then(value => {
+      console.log(value);
+      res.statusCode = 201;
+      res.json(req.body);
+    })
+    .catch(err => {
+      console.log(err);
+      res.statusCode = 500;
+      res.end(
+        "View error log on console. Maybe Duplicate email for key f_email_UNIQUE"
+      );
+    });
+});
+
 module.exports = router;

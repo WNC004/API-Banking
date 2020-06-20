@@ -14,29 +14,35 @@ router.post("/debt", async(req, res) => {
     _debt.createdAt = moment().format("YYYY-MM-DD HH:mm");
     let debtors = await customerRepo.getCustomerByAccount(_debt.account);
     let debtor = debtors[0];
-    console.log("aaa");
-    console.log(_debt);
-    console.log(debtor);
-    _debt.debtor_id = debtor.customerId;
-    _debt.name_debtors = debtor.name;
-    _debt.status = '1';
-    _debt.reason_deleted = '';
-    _debt.type = '1'; // tu tao
-    console.log(_debt);
-    debtRepo
-        .add(_debt)
-        .then(() => {
-            res.statusCode = 201;
-            res.json(req.body);
-        })
-        .catch(err => {
-            console.log(err);
-            res.statusCode = 500;
-            res.json({
-                status: "UNKNOWN_ERROR",
-                message: err
+    if(debtor != null){
+        _debt.debtor_id = debtor.customerId;
+        _debt.name_debtors = debtor.name;
+        _debt.status = '1';
+        _debt.reason_deleted = '';
+        _debt.type = '1'; // tu tao
+        debtRepo
+            .add(_debt)
+            .then(() => {
+                res.statusCode = 201;
+                res.json(req.body);
+            })
+            .catch(err => {
+                console.log(err);
+                res.statusCode = 500;
+                res.json({
+                    status: "UNKNOWN_ERROR",
+                    message: err
+                });
             });
+    }
+    else{
+        res.statusCode = 200;
+        res.json({
+            status: "UNKNOWN_ERROR",
+            message: "This acount is not exist"
         });
+    }
+    
 });
 
 router.get("/debts/:customerId", (req, res) => {

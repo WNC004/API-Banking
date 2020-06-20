@@ -67,4 +67,7 @@ COMMIT;
 ALTER TABLE debt ADD creditor_id VARCHAR(40);
 ALTER TABLE debt CHANGE `customer_id` `debtor_id` varchar(40);
 ALTER TABLE debt MODIFY type varchar(10);
+
+-- 20/06/2020 tranguyen
+ALTER TABLE debt CHANGE `message` `msg` varchar(255);
 commit;

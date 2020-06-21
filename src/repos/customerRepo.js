@@ -16,3 +16,8 @@ exports.changePassword = (newPassWord, id) => {
   var sql = `update users set f_password = '${md5_pwd}'  where f_id = '${id}'`;
   return db.load(sql);
 };
+
+exports.getCustomerById = id => {
+  const sql = `select f_email as email, f_name as name from users where f_id = '${id}'`;
+  return db.load(sql);
+};

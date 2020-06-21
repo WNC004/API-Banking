@@ -5,6 +5,7 @@ var _ = require("lodash");
 
 var customerRepo = require("../repos/customerRepo");
 var debtRepo = require("../repos/debtRepo");
+var payAccRepo = require("../repos/payAccRepo");
 
 var router = express.Router();
 
@@ -12,6 +13,13 @@ router.post("/debt", async(req, res) => {
     const _debt = req.body;
     _debt.id = shortid.generate();
     _debt.createdAt = moment().format("YYYY-MM-DD HH:mm");
+    console.log(_debt.creditor_id);
+    let user = await customerRepo.getCustomerById(_debt.creditor_id);
+    console.log(user[0].name);
+    _debt.creditor_name = user[0].name;
+    _debt.email_debtor = user[0].email;
+    let acc = await payAccRepo.loadPaymentAccByCustomerId(_debt.creditor_id, '1')
+    _debt.account_creditor = acc[0].accNumber;
     let debtors = await customerRepo.getCustomerByAccount(_debt.account);
     let debtor = debtors[0];
     if(debtor != null){
@@ -137,5 +145,24 @@ router.post("/contact/:contactId/delete", (req, res) => {
         });
 });
 
-
+router.post("/debt/delete", async(req, res) => {
+    const id = req.body.debtId;
+    const reason_deleted = req.body.reason;
+    console.log(id);
+    console.log(reason_deleted);
+    debtRepo
+    .deleteById(id, reason_deleted)
+    .then(() => {
+        res.statusCode = 200;
+        res.json(req.body);
+    })
+    .catch(err => {
+        console.log(err);
+        res.statusCode = 500;
+        res.json({
+            status: "UNKNOWN_ERROR",
+            message: err
+        });
+    });
+});
 module.exports = router;

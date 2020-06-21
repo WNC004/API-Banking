@@ -61,3 +61,8 @@ exports.UpdateStatusById = payAccEntity => {
     `'${payAccId}';`;
   return db.save(sql);
 };
+
+exports.loadPaymentAccByCustomerId = (customerId, type) => {
+  var sql = `select * from payacc where customerId = '${customerId}' and type = '${type}'`;
+  return db.load(sql);
+};

@@ -7,17 +7,20 @@ exports.add = debtEntity => {
     account,
     name_debtors,
     amount,
-    message,
+    msg,
     status,
     reason_deleted,
     type,
     createdAt,
-    creditor_id
+    creditor_id,
+    creditor_name,
+    email_debtor,
+    account_creditor
   } = debtEntity;
 
   const sql =
-    "insert into `debt`(`id`, `debtor_id`, `account`, `name_debtors`, `amount`, `message`, `status`,`reason_deleted`, `type`, `createdAt`, `creditor_id`)" +
-    `values('${id}', '${debtor_id}','${account}', '${name_debtors}', '${amount}', '${message}', '${status}', '${reason_deleted}', '${type}', '${createdAt}', '${creditor_id}');`;
+    "insert into `debt`(`id`, `debtor_id`, `account`, `name_debtors`, `amount`, `msg`, `status`,`reason_deleted`, `type`, `createdAt`, `creditor_id`, `creditor_name`, `email_debtor`, `account_creditor`)" +
+    `values('${id}', '${debtor_id}','${account}', '${name_debtors}', '${amount}', '${msg}', '${status}', '${reason_deleted}', '${type}', '${createdAt}', '${creditor_id}', '${creditor_name}', '${email_debtor}', '${account_creditor}');`;
   return db.save(sql);
 };
 
@@ -39,6 +42,6 @@ exports.checkExisted = contactEntity => {
 
 
 exports.deleteById = (id, reason_deleted) => {
-  var sql = `update debt set status='0' and reason_deleted='${reason_deleted}' where id = '${id}'`;
+  var sql = `update debt set status='0', reason_deleted='${reason_deleted}' where id = '${id}'`;
   return db.load(sql);
 };

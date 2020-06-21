@@ -53,7 +53,7 @@ exports.sendNotification = verifyEntity => {
   var mailOptions = {
     from: "jenkin.testing@gmail.com",
     to: clientEmail,
-    subject: "Verify transaction",
+    subject: "Deleted Debt",
     html: notifctionContent(verifyEntity)
   };
 

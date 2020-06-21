@@ -6,18 +6,17 @@ var _ = require("lodash");
 var customerRepo = require("../repos/customerRepo");
 var debtRepo = require("../repos/debtRepo");
 var payAccRepo = require("../repos/payAccRepo");
-
+var nodemailer = require("./../fn/nodemailer");
 var router = express.Router();
 
 router.post("/debt", async(req, res) => {
     const _debt = req.body;
     _debt.id = shortid.generate();
     _debt.createdAt = moment().format("YYYY-MM-DD HH:mm");
-    console.log(_debt.creditor_id);
     let user = await customerRepo.getCustomerById(_debt.creditor_id);
-    console.log(user[0].name);
     _debt.creditor_name = user[0].name;
-    _debt.email_debtor = user[0].email;
+    _debt.creditor_email = user[0].email;
+    
     let acc = await payAccRepo.loadPaymentAccByCustomerId(_debt.creditor_id, '1')
     _debt.account_creditor = acc[0].accNumber;
     let debtors = await customerRepo.getCustomerByAccount(_debt.account);
@@ -25,6 +24,7 @@ router.post("/debt", async(req, res) => {
     if(debtor != null){
         _debt.debtor_id = debtor.customerId;
         _debt.name_debtors = debtor.name;
+        _debt.email_debtor = debtor.email;
         _debt.status = '1';
         _debt.reason_deleted = '';
         _debt.type = '1'; // tu tao
@@ -56,12 +56,9 @@ router.post("/debt", async(req, res) => {
 router.get("/debts/:customerId", (req, res) => {
     const { customerId } = req.params;
 
-    console.log(req.param);
-
     debtRepo
         .loadByCustomerId(customerId)
         .then(rows => {
-            console.log(rows);
             res.statusCode = 200;
             // res.json(rows);
             res.send(
@@ -82,12 +79,9 @@ router.get("/debts/:customerId", (req, res) => {
 router.get("/debts/other/:customerId", (req, res) => {
     const { customerId } = req.params;
 
-    console.log(req.param);
-
     debtRepo
         .loadByDebtor(customerId)
         .then(rows => {
-            console.log(rows);
             res.statusCode = 200;
             // res.json(rows);
             res.send(
@@ -113,7 +107,6 @@ router.get("/contact/:accNumber/is-existed", (req, res) => {
         .checkExisted(contactEntity)
         .then(rows => {
             res.statusCode = 200;
-            console.log(rows);
             if (rows.length > 0) {
                 res.json({ "existed": "1" });
             } else {
@@ -147,12 +140,38 @@ router.post("/contact/:contactId/delete", (req, res) => {
 
 router.post("/debt/delete", async(req, res) => {
     const id = req.body.debtId;
+    const customerId = req.body.customerId;
+    let debt = await debtRepo.loadById(id);
     const reason_deleted = req.body.reason;
-    console.log(id);
+    console.log(customerId);
     console.log(reason_deleted);
     debtRepo
     .deleteById(id, reason_deleted)
     .then(() => {
+        let clientEmail;
+        let clientName;
+        let action;
+        if(customerId == debt[0].debtor_id){
+            console.log("=1");
+            clientEmail = debt[0].creditor_email;
+            clientName = debt[0].creditor_name;
+            action = debt[0].name_debtors;
+        }
+        else{
+            console.log("=2");
+            clientEmail = debt[0].email_debtor;
+            clientName = debt[0].name_debtors;
+            action = debt[0].creditor_name;
+        }
+        console.log("abcxyz");
+        console.log(clientEmail);
+        console.log(clientName);
+        const verifyEntity = {
+            clientEmail,
+            clientName,
+            action
+          };
+          nodemailer.sendNotification(verifyEntity);
         res.statusCode = 200;
         res.json(req.body);
     })

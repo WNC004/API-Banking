@@ -171,7 +171,7 @@ router.post("/debt/delete", async(req, res) => {
             clientName,
             action
           };
-          nodemailer.sendNotification(verifyEntity);
+          nodemailer.sendNotificationDeleteDebt(verifyEntity);
         res.statusCode = 200;
         res.json(req.body);
     })
@@ -184,4 +184,29 @@ router.post("/debt/delete", async(req, res) => {
         });
     });
 });
+
+router.post("/debt/notify", async(req, res) => {
+    console.log("abc");
+    const id = req.body.id;
+    const email_debtor = req.body.email_debtor;
+    let debt = await debtRepo.loadById(id);
+    try {
+        const verifyEntity = {
+            clientEmail: debt[0].email_debtor,
+            creditor: debt[0].creditor_name,
+            amount: debt[0].amount,
+            debtor: debt[0].name_debtors
+        };
+        console.log(debt[0].email_debtor);
+        nodemailer.sendNotification(verifyEntity);
+        res.statusCode = 200;
+        res.json(req.body);
+    } catch (error) {
+    
+        res.statusCode = 500;
+        res.json(req.body);
+    }
+    
+});
+
 module.exports = router;

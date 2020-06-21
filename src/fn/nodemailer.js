@@ -22,6 +22,16 @@ const notifctionContent = verifyEntity => {
   `;
 };
 
+const notifction = verifyEntity => {
+  const { debtor, creditor, amount } = verifyEntity;
+  return `
+    <p>Dear <i>${debtor}</i>, </p>
+    <p>Bạn có mượn ${creditor} ${amount} VND. Hãy trả cho ${creditor} sớm nhé!</p>
+    <p>Thank you for utilizing our services,</p>
+    <p>Banking team</p>
+  `;
+};
+
 var transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
@@ -48,13 +58,31 @@ exports.sendMail = verifyEntity => {
   });
 };
 
-exports.sendNotification = verifyEntity => {
+exports.sendNotificationDeleteDebt = verifyEntity => {
   const { clientEmail } = verifyEntity;
   var mailOptions = {
     from: "jenkin.testing@gmail.com",
     to: clientEmail,
     subject: "Deleted Debt",
     html: notifctionContent(verifyEntity)
+  };
+
+  transporter.sendMail(mailOptions, function(error, info) {
+    if (error) {
+      console.log(error);
+    } else {
+      console.log("Email sent: " + info.response);
+    }
+  });
+};
+
+exports.sendNotification = verifyEntity => {
+  const { clientEmail } = verifyEntity;
+  var mailOptions = {
+    from: "jenkin.testing@gmail.com",
+    to: clientEmail,
+    subject: "Reminder debt",
+    html: notifction(verifyEntity)
   };
 
   transporter.sendMail(mailOptions, function(error, info) {

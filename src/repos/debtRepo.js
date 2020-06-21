@@ -26,12 +26,12 @@ exports.add = debtEntity => {
 };
 
 exports.loadByCustomerId = customerId => {
-  var sql = `select * from debt where creditor_id = '${customerId}' and status='1'`;
+  var sql = `select * from debt where creditor_id = '${customerId}' and status='1' and amount > '0'`;
   return db.load(sql);
 };
 
 exports.loadByDebtor = customerId => {
-  var sql = `select * from debt where debtor_id = '${customerId}' and status='1'`;
+  var sql = `select * from debt where debtor_id = '${customerId}' and status='1' and amount > '0'`;
   return db.load(sql);
 };
 

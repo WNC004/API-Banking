@@ -10,7 +10,7 @@ var createConnection = () => {
     host: "db4free.net",
     user: "wnc004",
     password: "P@ssword123456",
-    database: "WNC004"
+    database: "wnc004"
   });
 };
 

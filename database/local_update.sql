@@ -76,5 +76,7 @@ ALTER TABLE debt ADD email_debtor VARCHAR(40);
 ALTER TABLE debt ADD account_creditor VARCHAR(40);
 ALTER TABLE payacc ADD type VARCHAR(2);
 ALTER TABLE debt ADD creditor_email VARCHAR(40);
+
+--
     
 commit;

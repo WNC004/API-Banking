@@ -1,16 +1,53 @@
 var express = require("express");
 var uid = require("rand-token").uid;
 var authRepo = require("../repos/authRepo");
+var shortid = require("shortid");
+var moment = require("moment");
 
 var router = express.Router();
 
+var payAccRepo = require("../repos/payAccRepo");
+var { PAY_ACC_STATUS_OPEN, PAY_ACC_STATUS_CLOSED } = require("../fn/constant");
 //Add new user
 router.post("/user", (req, res) => {
   var id = uid(10);
+  req.body.Username = require("rand-token")
+  .generator({
+    chars: "numeric"
+  })
+  .generate(10);
   authRepo
     .add(req.body, id)
     .then(value => {
-      console.log(value);
+      let _payAcc = new Object();
+      _payAcc.id = shortid.generate();
+      _payAcc.createdAt = moment().format("YYYY-MM-DD HH:mm");
+      _payAcc.balance = 0;
+      _payAcc.status = PAY_ACC_STATUS_OPEN;
+      _payAcc.accNumber = require("rand-token")
+        .generator({
+          chars: "numeric"
+        })
+        .generate(8);
+      _payAcc.Type = '1'; 
+      _payAcc.customerId = id,
+      _payAcc.clientEmail = req.body.Email,
+      _payAcc.clientName = req.body.Name,
+      _payAcc.phone = req.body.Phone;
+      payAccRepo
+        .add(_payAcc)
+        .then(() => {
+          res.statusCode = 201;
+          res.json(req.body);
+        })
+        .catch(err => {
+          console.log(err);
+          res.statusCode = 500;
+          res.json({
+            status: "UNKNOWN_ERROR",
+            message: err
+          });
+        });
       res.statusCode = 201;
       res.json(req.body);
     })

@@ -33,6 +33,29 @@ router.get("/pay-accs/:customerId", (req, res) => {
   const { customerId } = req.params;
 
   payAccRepo
+    .loadPaymentByCustomerId(customerId)
+    .then(rows => {
+      res.statusCode = 200;
+      // res.json(rows);
+      res.send(
+        _.sortBy(JSON.parse(JSON.stringify(rows)), [
+          function (o) {
+            return o.createdAt;
+          }
+        ]).reverse()
+      );
+    })
+    .catch(err => {
+      console.log(err);
+      res.statusCode = 500;
+      res.end("View error log on console");
+    });
+});
+
+router.get("/pay-accs-all/:customerId", (req, res) => {
+  const { customerId } = req.params;
+
+  payAccRepo
     .loadByCustomerId(customerId)
     .then(rows => {
       res.statusCode = 200;
@@ -52,7 +75,6 @@ router.get("/pay-accs/:customerId", (req, res) => {
     });
 });
 
-
 router.post("/pay-acc", (req, res) => {
   const _payAcc = req.body;
   _payAcc.id = shortid.generate();
@@ -67,7 +89,7 @@ router.post("/pay-acc", (req, res) => {
       chars: "numeric"
     })
     .generate(8);
-
+  _payAcc.Type = '2'; 
   payAccRepo
     .add(_payAcc)
     .then(() => {

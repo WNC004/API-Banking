@@ -29,6 +29,11 @@ exports.loadByCustomerId = customerId => {
   return db.load(sql);
 };
 
+exports.loadPaymentByCustomerId = customerId => {
+  var sql = `select * from payacc where customerId = '${customerId}' and type = '1'`;
+  return db.load(sql);
+};
+
 exports.UpdateBalanceById = payAccEntity => {
   const { payAccId, newBalance } = payAccEntity;
   var sql =

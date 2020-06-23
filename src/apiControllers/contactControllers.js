@@ -59,7 +59,6 @@ router.get("/contact/:accNumber/is-existed", (req, res) => {
         .checkExisted(contactEntity)
         .then(rows => {
             res.statusCode = 200;
-            console.log(rows);
             if (rows.length > 0) {
                 res.json({ "existed": "1" });
             } else {

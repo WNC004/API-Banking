@@ -10,7 +10,6 @@ var router = express.Router();
 
 router.post("/me", (req, res) => {
   let payload = req.token_payload;
-  console.log(req.token_payload);
   res.json({
     info: {
       name: payload.user.f_name,

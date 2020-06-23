@@ -128,9 +128,9 @@ exports.add = (userEntity, id) => {
   var md5_pwd = md5(userEntity.Password);
   var sql = `insert into users(f_id, f_password, f_username, f_email, f_name , f_phone, f_type, f_createdAt) values('${id}','${md5_pwd}', '${
     userEntity.Username
-  }', '${userEntity.Email}', '${userEntity.Name}', '${userEntity.Phone}',  ${
+  }', '${userEntity.Email}', '${userEntity.Name}', '${userEntity.Phone}',  '${
     userEntity.Type
-  }, '${moment().format("YYYY-MM-DD HH:mm")}')`;
+  }', '${moment().format("YYYY-MM-DD HH:mm")}')`;
 
   return db.save(sql);
 };

@@ -28,6 +28,85 @@ router.get("/staffs", (req, res) => {
         });
 });
 
+router.get("/staffs/:staffId", (req, res) => {
+    const { staffId } = req.params;
+
+    staffRepo
+        .getStaffById(staffId)
+        .then(rows => {
+            res.statusCode = 200;
+            // res.json(rows);
+            res.send(
+                _.sortBy(JSON.parse(JSON.stringify(rows)), [
+                    function (o) {
+                        return o.createdAt;
+                    }
+                ]).reverse()
+            );
+        })
+        .catch(err => {
+            console.log(err);
+            res.statusCode = 500;
+            res.end("View error log on console");
+        });
+});
+
+
+router.post("/staffs/delete", (req, res) => {
+    // const id  = req.body.id;
+    staffRepo
+    .deleteById(req.body.id)
+    .then(rows => {
+        res.statusCode = 200;
+        // res.json(rows);
+        res.send(
+            _.sortBy(JSON.parse(JSON.stringify(rows)), [
+                function (o) {
+                    return o.createdAt;
+                }
+            ]).reverse()
+        );
+    })
+    .catch(err => {
+        console.log(err);
+        res.statusCode = 500;
+        res.json({
+            status: "UNKNOWN_ERROR",
+            message: err
+        });
+    });
+});
+
+
+router.post("/staffs/edit", (req, res) => {
+    const id = req.body.id;
+    const name = req.body.name;
+    const email = req.body.email;
+    const phone = req.body.phone;
+
+    staffRepo
+    .editById(id,name,email,phone)
+    .then(rows => {
+        res.statusCode = 200;
+        // res.json(rows);
+        res.send(
+            _.sortBy(JSON.parse(JSON.stringify(rows)), [
+                function (o) {
+                    return o.createdAt;
+                }
+            ]).reverse()
+        );
+    })
+    .catch(err => {
+        console.log(err);
+        res.statusCode = 500;
+        res.json({
+            status: "UNKNOWN_ERROR",
+            message: err
+        });
+    });
+});
+
 
 
 module.exports = router;

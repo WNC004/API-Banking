@@ -77,6 +77,7 @@ ALTER TABLE debt ADD account_creditor VARCHAR(40);
 ALTER TABLE payacc ADD type VARCHAR(2);
 ALTER TABLE debt ADD creditor_email VARCHAR(40);
 
---
+-- 23/06/2020 tranguyen
+ALTER TABLE debt ADD creditor_name VARCHAR(40);
     
 commit;

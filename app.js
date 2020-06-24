@@ -27,6 +27,8 @@ var debtCtrl = require("./src/apiControllers/debtControllers");
 
 var staffCtrl = require("./src/apiControllers/staffControllers");
 
+var connectCtrl = require("./src/apiControllers/connectControllers");
+
 // Controllers END
 
 var verifyAccessToken = require("./src/repos/authRepo").verifyAccessToken;
@@ -42,6 +44,9 @@ app.use(cors());
 
 app.use("/auth", authCtrl);
 app.use("/user", verifyAccessToken, userCtrl);
+
+// app.use("/api", connectCtrl)
+app.use("/api",connectCtrl);
 
 app.post("/send-otp", verifyAccessToken, (req, res) => {
   const { clientEmail, clientName } = req.body;
@@ -78,6 +83,8 @@ app.use("/", verifyAccessToken, debtCtrl);
 
 // app.use("/", staffCtrl);
 app.use("/", verifyAccessToken, staffCtrl);
+
+
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {

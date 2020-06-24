@@ -7,6 +7,7 @@ var bodyParser = require("body-parser"),
 
 var nodemailer = require("./nodemailer");
 
+var customerRepo = require("./src/repos/customerRepo");
 // server nodejs START
 
 // Controllers START
@@ -60,6 +61,43 @@ app.post("/send-otp", verifyAccessToken, (req, res) => {
   res.statusCode = 201;
   res.json({ otp: otp });
 });
+
+app.post("/forgot-password/send-otp", (req, res) => {
+  const { clientEmail, clientName } = req.body;
+  const otp = require("rand-token")
+    .generator({
+      chars: "numeric"
+    })
+    .generate(6);
+
+  const verifyEntity = {
+    clientEmail,
+    clientName,
+    otp
+  };
+  nodemailer.sendMail(verifyEntity);
+  res.statusCode = 201;
+  res.json({ otp: otp });
+});
+
+app.post("/forgot-password/save-change", (req, res) => {
+  const { email, password } = req.body;
+  customerRepo
+    .forgotPassword(password, email)
+    .then(value => {
+      console.log(value);
+      res.statusCode = 201;
+      res.json(req.body);
+    })
+    .catch(err => {
+      console.log(err);
+      res.statusCode = 500;
+      res.end(
+        "View error log on console. Maybe Duplicate email for key f_email_UNIQUE"
+      );
+    });
+});
+
 
 // app.use("/", payAccCtrl);
 app.use("/", verifyAccessToken, payAccCtrl);

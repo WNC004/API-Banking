@@ -21,3 +21,9 @@ exports.getCustomerById = id => {
   const sql = `select f_email as email, f_username as username, f_name as name from users where f_id = '${id}'`;
   return db.load(sql);
 };
+
+exports.forgotPassword = (password, email) => {
+  var md5_pwd = md5(password);
+  var sql = `update users set f_password = '${md5_pwd}'  where f_email = '${email}'`;
+  return db.load(sql);
+};

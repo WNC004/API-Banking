@@ -49,6 +49,11 @@ exports.loadByAccNumber = accNumber => {
   return db.load(sql);
 };
 
+exports.loadConnectByAccNumber = accNumber => {
+  var sql = `select clientEmail, clientName, phone from payacc where accNumber = '${accNumber}'`;
+  return db.load(sql);
+};
+
 
 exports.loadByOpen = openStatus => {
   var sql = `select * from payacc where status = '${openStatus}'`;

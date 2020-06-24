@@ -1,5 +1,7 @@
 var express = require("express");
 var customerRepo = require("../repos/customerRepo");
+var payAccRepo = require("../repos/payAccRepo");
+
 const jwt = require('jsonwebtoken');
 const moment = require('moment');
 const bcrypt = require('bcryptjs');
@@ -14,11 +16,13 @@ var verifyConnect = require('../middlewares/verifyConnect.mdw');
 var router = express.Router();
 
 router.get("/users", verifyConnect , async (req,res) => {
-    const results = await customerRepo.getCustomerById(req.body.userID);
+    // const results = await customerRepo.getCustomerById(req.body.userID);
+    const results = await payAccRepo.loadConnectByAccNumber(req.body.accountID);
 
-    delete results.password_hash;
+    console.log(results);
 
     res.json(results);
+
 });
 
 module.exports = router;

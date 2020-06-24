@@ -55,7 +55,7 @@ router.get("/staffs/:staffId", (req, res) => {
 router.post("/staffs/delete", (req, res) => {
     // const id  = req.body.id;
     staffRepo
-    .deleteById(req.body.id)
+    .deleteById(req.body.staffId)
     .then(rows => {
         res.statusCode = 200;
         // res.json(rows);
@@ -79,9 +79,9 @@ router.post("/staffs/delete", (req, res) => {
 
 
 router.post("/staffs/edit", (req, res) => {
-    const id = req.body.id;
-    const name = req.body.name;
-    const email = req.body.email;
+    const id = req.body.staffId;
+    const name = req.body.staffName;
+    const email = req.body.staffEmail;
     const phone = req.body.phone;
 
     staffRepo

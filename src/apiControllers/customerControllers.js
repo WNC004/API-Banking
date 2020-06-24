@@ -8,7 +8,6 @@ const cryptoJS = require('crypto-js')
 var _ = require("lodash");
 
 const config = require('../config/default.json');
-const verifyConnect = require('../middlewares/verifyConnect.mdw');
 var router = express.Router();
 
 router.get("/customers", (req, res) => {
@@ -53,14 +52,6 @@ router.get("/customers", (req, res) => {
 //           res.end("View error log on console");
 //       });
 // });
-
-router.get("connect-bank/:userId", verifyConnect ,async (req,res) => {
-  const results = await customerRepo.singleByUserID(req.body.userID);
-
-  delete results.password_hash;
-
-  res.json(results);
-});
 
 router.post("/customer/change-password", (req, res) => {
   var newPassword = req.body.newPassword;

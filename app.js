@@ -7,6 +7,7 @@ var bodyParser = require("body-parser"),
 
 var nodemailer = require("./nodemailer");
 
+var customerRepo = require("./src/repos/customerRepo");
 // server nodejs START
 
 // Controllers START
@@ -27,6 +28,8 @@ var debtCtrl = require("./src/apiControllers/debtControllers");
 
 var staffCtrl = require("./src/apiControllers/staffControllers");
 
+var connectCtrl = require("./src/apiControllers/connectControllers");
+
 // Controllers END
 
 var verifyAccessToken = require("./src/repos/authRepo").verifyAccessToken;
@@ -42,7 +45,10 @@ app.use(cors());
 
 app.use("/auth", authCtrl);
 app.use("/user", verifyAccessToken, userCtrl);
-app.use("", historyCtrl);
+
+// app.use("/api", connectCtrl)
+app.use("/api",connectCtrl);
+
 app.post("/send-otp", verifyAccessToken, (req, res) => {
   const { clientEmail, clientName } = req.body;
   const otp = require("rand-token")
@@ -61,6 +67,43 @@ app.post("/send-otp", verifyAccessToken, (req, res) => {
   res.json({ otp: otp });
 });
 
+app.post("/forgot-password/send-otp", (req, res) => {
+  const { clientEmail, clientName } = req.body;
+  const otp = require("rand-token")
+    .generator({
+      chars: "numeric"
+    })
+    .generate(6);
+
+  const verifyEntity = {
+    clientEmail,
+    clientName,
+    otp
+  };
+  nodemailer.sendMail(verifyEntity);
+  res.statusCode = 201;
+  res.json({ otp: otp });
+});
+
+app.post("/forgot-password/save-change", (req, res) => {
+  const { email, password } = req.body;
+  customerRepo
+    .forgotPassword(password, email)
+    .then(value => {
+      console.log(value);
+      res.statusCode = 201;
+      res.json(req.body);
+    })
+    .catch(err => {
+      console.log(err);
+      res.statusCode = 500;
+      res.end(
+        "View error log on console. Maybe Duplicate email for key f_email_UNIQUE"
+      );
+    });
+});
+
+
 // app.use("/", payAccCtrl);
 app.use("/", verifyAccessToken, payAccCtrl);
 
@@ -78,6 +121,8 @@ app.use("/", verifyAccessToken, debtCtrl);
 
 // app.use("/", staffCtrl);
 app.use("/", verifyAccessToken, staffCtrl);
+
+
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {

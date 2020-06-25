@@ -42,7 +42,7 @@ app.use(cors());
 
 app.use("/auth", authCtrl);
 app.use("/user", verifyAccessToken, userCtrl);
-
+app.use("", historyCtrl);
 app.post("/send-otp", verifyAccessToken, (req, res) => {
   const { clientEmail, clientName } = req.body;
   const otp = require("rand-token")

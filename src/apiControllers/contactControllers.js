@@ -72,10 +72,11 @@ router.get("/contact/:accNumber/is-existed", (req, res) => {
         });
 });
 
-router.post("/contact/:contactId/delete", (req, res) => {
-    const { contactId } = req.params;
+router.post("/contact/delete", (req, res) => {
+    const id = req.body.id;
+    console.log(id);
     contactRepo
-        .deleteById(contactId)
+        .deleteById(id)
         .then(() => {
             res.statusCode = 201;
             res.json({ "deleted": "ok" });

@@ -27,7 +27,7 @@ exports.checkExisted = contactEntity => {
 };
 
 
-exports.deleteById = contactId => {
-  var sql = `delete from contact where id = '${contactId}'`;
+exports.deleteById = id => {
+  var sql = `delete from contact where id = '${id}'`;
   return db.load(sql);
 };

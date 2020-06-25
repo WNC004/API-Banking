@@ -11,6 +11,7 @@ var _ = require("lodash");
 
 const config = require('../config/default.json');
 var verifyConnect = require('../middlewares/verifyConnect.mdw');
+var verifyPGP = require('../middlewares/verifyPGP.mdw');
 
 
 var router = express.Router();
@@ -24,6 +25,18 @@ router.get("/users", verifyConnect , async (req,res) => {
     res.json(results);
 
 });
+
+
+router.get("/PGP/users", verifyPGP , async (req,res) => {
+    // const results = await customerRepo.getCustomerById(req.body.userID);
+    const results = await payAccRepo.loadConnectByAccNumber(req.body.accountID);
+
+    console.log(results);
+
+    res.json(results);
+
+});
+
 
 module.exports = router;
 

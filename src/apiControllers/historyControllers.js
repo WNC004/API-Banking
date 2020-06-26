@@ -50,4 +50,90 @@ router.get("/histories/:payAccId", (req, res) => {
         });
 });
 
+router.post("/histories/received", (req, res) => {
+    const { bankName, from, to } = req.body;
+
+    historyRepo
+        .sumReceiced(bankName, from, to)
+        .then(rows => {
+            res.statusCode = 200;
+            var sum = 0;
+            if (rows.length > 0) {
+                sum = rows[0].sumAmount;
+            }
+            res.json(sum);
+        })
+        .catch(err => {
+            console.log(err);
+            res.statusCode = 500;
+            res.end("View error log on console");
+        });
+});
+
+router.post("/histories/sent", (req, res) => {
+    const { bankName, from, to } = req.body;
+
+    historyRepo
+        .sumSent(bankName, from, to)
+        .then(rows => {
+            res.statusCode = 200;
+            var sum = 0;
+            if (rows.length > 0) {
+                sum = rows[0].sumAmount;
+            }
+            res.json(sum);
+        })
+        .catch(err => {
+            console.log(err);
+            res.statusCode = 500;
+            res.end("View error log on console");
+        });
+});
+
+router.post("/histories/received-list", (req, res) => {
+    const { bankName, from, to } = req.body;
+
+    historyRepo
+        .getReceiced(bankName, from, to)
+        .then(rows => {
+            res.statusCode = 200;
+            // res.json(rows);
+            res.send(
+                _.sortBy(JSON.parse(JSON.stringify(rows)), [
+                    function (o) {
+                        return o.createdAt;
+                    }
+                ]).reverse()
+            );
+        })
+        .catch(err => {
+            console.log(err);
+            res.statusCode = 500;
+            res.end("View error log on console");
+        });
+});
+
+router.post("/histories/sent-list", (req, res) => {
+    const { bankName, from, to } = req.body;
+
+    historyRepo
+        .getSent(bankName, from, to)
+        .then(rows => {
+            res.statusCode = 200;
+            // res.json(rows);
+            res.send(
+                _.sortBy(JSON.parse(JSON.stringify(rows)), [
+                    function (o) {
+                        return o.createdAt;
+                    }
+                ]).reverse()
+            );
+        })
+        .catch(err => {
+            console.log(err);
+            res.statusCode = 500;
+            res.end("View error log on console");
+        });
+});
+
 module.exports = router;

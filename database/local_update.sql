@@ -79,5 +79,8 @@ ALTER TABLE debt ADD creditor_email VARCHAR(40);
 
 -- 23/06/2020 tranguyen
 ALTER TABLE debt ADD creditor_name VARCHAR(40);
+
+-- 26/06/2020 tranguyen
+ALTER TABLE history MODIFY createdAt datetime(6);
     
 commit;

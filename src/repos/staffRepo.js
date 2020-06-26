@@ -20,12 +20,7 @@ exports.loadById = id => {
     return db.load(sql);
 };
 
-exports.editById = (id,name,email,phone) => {
+exports.update = (id,name,email,phone) => {
     var sql = `update users set f_name = '${name}', f_email='${email}', f_phone='${phone}' where f_id = '${id}'`;
     return db.load(sql);
 };
-
-
-
-
-

@@ -31,3 +31,8 @@ exports.deleteById = id => {
   var sql = `delete from contact where id = '${id}'`;
   return db.load(sql);
 };
+
+exports.update = (id, payAccEdit, nickNameEdit) => {
+  var sql = `update contact set toAccNumber = '${payAccEdit}', toNickName='${nickNameEdit}' where id = '${id}'`;
+  return db.load(sql);
+};

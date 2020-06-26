@@ -91,5 +91,24 @@ router.post("/contact/delete", (req, res) => {
         });
 });
 
+router.post("/contact/update", (req, res) => {
+    const {id, payAccEdit, nickNameEdit} = req.body;
+    console.log(id);
+    contactRepo
+        .update(id, payAccEdit, nickNameEdit)
+        .then(() => {
+            res.statusCode = 201;
+            res.json({ "update": "ok" });
+        })
+        .catch(err => {
+            console.log(err);
+            res.statusCode = 500;
+            res.json({
+                status: "UNKNOWN_ERROR",
+                message: err
+            });
+        });
+});
+
 
 module.exports = router;

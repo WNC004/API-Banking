@@ -129,7 +129,7 @@ module.exports = async function(req, res, next) {
 
     const verified = await openpgp.verify({
         message: openpgp.cleartext.fromText(data),              // CleartextMessage or Message object
-        signature: await openpgp.signature.readArmored(detachedSignature), // parse detached signature
+        signature: await openpgp.signature.readArmored(req.headers['sign']), // parse detached signature
         publicKeys: (await openpgp.key.readArmored(publicKeyArmored)).keys // for verification
     });
     const { valid } = verified.signatures[0];

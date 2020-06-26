@@ -27,14 +27,31 @@ router.get("/users", verifyConnect , async (req,res) => {
 });
 
 
-router.get("/PGP/users", verifyPGP , async (req,res) => {
-    // const results = await customerRepo.getCustomerById(req.body.userID);
-    const results = await payAccRepo.loadConnectByAccNumber(req.body.accountID);
+router.post("/PGP/users", verifyPGP , async (req,res) => {
+    // const results = await payAccRepo.UpdateBalanceByAccNumber(req.body.accountID, req.body.newBalance);
+    const accNumber = req.body.accountID;
+    // newBalance = số dư cũ + tiền cần nạp;
+    const newBalance = req.body.newBalance;
 
-    console.log(results);
+    const payAccEntity = {
+    accNumber,
+    newBalance
+    }
 
-    res.json(results);
-
+    payAccRepo
+    .UpdateBalanceByAccNumber(payAccEntity)
+    .then(result => {
+        console.log(result);
+        res.statusCode = 201;
+        res.json({
+        status: "OK"
+        });
+    })
+    .catch(err => {
+        console.log(err);
+        res.statusCode = 500;
+        res.end("View error log on console");
+    });
 });
 
 

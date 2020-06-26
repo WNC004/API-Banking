@@ -124,8 +124,9 @@ module.exports = async function(req, res, next) {
         privateKeys: [privateKey],                            // for signing
         detached: true
     });
-    
     console.log(detachedSignature);
+
+    //Create Sign to Compare
     const sign = await cryptoJS.HmacSHA256(data, privateKeyArmored).toString();
     console.log(sign);
     

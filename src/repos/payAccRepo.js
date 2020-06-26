@@ -76,3 +76,13 @@ exports.loadPaymentAccByCustomerId = (customerId, type) => {
   var sql = `select * from payacc where customerId = '${customerId}' and type = '${type}'`;
   return db.load(sql);
 };
+
+exports.UpdateBalanceByAccNumber = payAccEntity => {
+  const { accNumber, newBalance } = payAccEntity;
+  var sql =
+    "update payacc set balance = " +
+    `'${newBalance}'` +
+    " where accNumber=" +
+    `'${accNumber}';`;
+  return db.save(sql);
+};

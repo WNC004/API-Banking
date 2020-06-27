@@ -82,5 +82,21 @@ ALTER TABLE debt ADD creditor_name VARCHAR(40);
 
 -- 26/06/2020 tranguyen
 ALTER TABLE history MODIFY createdAt datetime(6);
+
+-- 27/06/2020 tranguyen
+
+CREATE TABLE `banks` (
+  `id` varchar(10) NOT NULL,
+  `bank_name` varchar(255) NOT NULL,
+  `security_type` varchar(10) NOT NULL,
+  `status` tinyint(1) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+ALTER TABLE `banks`
+  ADD PRIMARY KEY (`id`);
+
+ALTER TABLE history ADD bank_id VARCHAR(10);
+
+ALTER TABLE contact ADD bank_id VARCHAR(10);
     
 commit;

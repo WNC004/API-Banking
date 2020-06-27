@@ -23,7 +23,7 @@ exports.generateAccessToken = userEntity => {
 
 exports.verifyAccessToken = (req, res, next) => {
   var token = req.headers["x-access-token"];
-  console.log(token);
+  //console.log(token);
 
   if (token) {
     jwt.verify(token, SECRET, (err, payload) => {
@@ -39,7 +39,7 @@ exports.verifyAccessToken = (req, res, next) => {
           });
         }
       } else {
-        console.log(payload);
+        //console.log(payload);
         req.token_payload = payload;
         next();
       }

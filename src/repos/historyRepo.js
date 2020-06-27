@@ -27,9 +27,9 @@ exports.loadByPayAccId = payAccId => {
 
 exports.sumReceiced = (bankName, from, to) =>{
  
-  var sql = `SELECT SUM(amount) as sumAmount from history WHERE transactionType='received' `;
+  var sql = `SELECT SUM(amount) as sumAmount from history WHERE id is not null `;
   if(bankName!=null && bankName!=undefined && bankName!=""){
-    sql = sql + `and bankName = '${bankName}' `;
+    sql = sql + `and bank_id = '${bankName}' `;
   }
   if(from!=null && from!=undefined && from!=""){
     sql = sql + `and createdAt >= '${from}' `;
@@ -46,7 +46,7 @@ exports.sumSent = (bankName, from, to) =>{
 
   var sql = `SELECT SUM(amount) as sumAmount from history WHERE transactionType='sent' `;
   if(bankName!=null && bankName!=undefined && bankName!=""){
-    sql = sql + `and bankName = '${bankName}' `;
+    sql = sql + `and bank_id = '${bankName}' `;
   }
   if(from!=null && from!=undefined && from!=""){
     sql = sql + `and createdAt >= '${from}' `;
@@ -60,9 +60,9 @@ exports.sumSent = (bankName, from, to) =>{
 
 exports.getReceiced = (bankName, from, to) =>{
  
-  var sql = `SELECT * from history WHERE transactionType='received' `;
+  var sql = `SELECT * from history WHERE id is not null `;
   if(bankName!=null && bankName!=undefined && bankName!=""){
-    sql = sql + `and bankName = '${bankName}' `;
+    sql = sql + `and bank_id = '${bankName}' `;
   }
   if(from!=null && from!=undefined && from!=""){
     sql = sql + `and createdAt >= '${from}' `;
@@ -79,7 +79,7 @@ exports.getSent = (bankName, from, to) =>{
 
   var sql = `SELECT * from history WHERE transactionType='sent' `;
   if(bankName!=null && bankName!=undefined && bankName!=""){
-    sql = sql + `and bankName = '${bankName}' `;
+    sql = sql + `and bank_id = '${bankName}' `;
   }
   if(from!=null && from!=undefined && from!=""){
     sql = sql + `and createdAt >= '${from}' `;

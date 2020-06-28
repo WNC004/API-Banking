@@ -98,5 +98,8 @@ ALTER TABLE `banks`
 ALTER TABLE history ADD bank_id VARCHAR(10);
 
 ALTER TABLE contact ADD bank_id VARCHAR(10);
+
+-- 28/06/2020
+INSERT INTO `banks`(`id`, `bank_name`, `security_type`, `status`) VALUES ("ALL", "--ALL--","NONE",1);
     
 commit;

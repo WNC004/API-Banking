@@ -28,7 +28,7 @@ exports.loadByPayAccId = payAccId => {
 exports.sumReceiced = (bankName, from, to) =>{
  
   var sql = `SELECT SUM(amount) as sumAmount from history WHERE id is not null `;
-  if(bankName!=null && bankName!=undefined && bankName!=""){
+  if(bankName!=null && bankName!=undefined && bankName!="" && bankName!="ALL"){
     sql = sql + `and bank_id = '${bankName}' `;
   }
   if(from!=null && from!=undefined && from!=""){
@@ -45,7 +45,7 @@ exports.sumSent = (bankName, from, to) =>{
   //SELECT SUM(amount) as sumAmount from history WHERE transactionType='received' and createdAt >= '2020/06/13' and reatedAt <= '2020/06/26'
 
   var sql = `SELECT SUM(amount) as sumAmount from history WHERE transactionType='sent' `;
-  if(bankName!=null && bankName!=undefined && bankName!=""){
+  if(bankName!=null && bankName!=undefined && bankName!="" && bankName!="ALL"){
     sql = sql + `and bank_id = '${bankName}' `;
   }
   if(from!=null && from!=undefined && from!=""){
@@ -61,7 +61,7 @@ exports.sumSent = (bankName, from, to) =>{
 exports.getReceiced = (bankName, from, to) =>{
  
   var sql = `SELECT * from history WHERE id is not null `;
-  if(bankName!=null && bankName!=undefined && bankName!=""){
+  if(bankName!=null && bankName!=undefined && bankName!="" && bankName!="ALL"){
     sql = sql + `and bank_id = '${bankName}' `;
   }
   if(from!=null && from!=undefined && from!=""){
@@ -78,7 +78,7 @@ exports.getSent = (bankName, from, to) =>{
   //SELECT SUM(amount) as sumAmount from history WHERE transactionType='received' and createdAt >= '2020/06/13' and reatedAt <= '2020/06/26'
 
   var sql = `SELECT * from history WHERE transactionType='sent' `;
-  if(bankName!=null && bankName!=undefined && bankName!=""){
+  if(bankName!=null && bankName!=undefined && bankName!="" && bankName!="ALL"){
     sql = sql + `and bank_id = '${bankName}' `;
   }
   if(from!=null && from!=undefined && from!=""){
@@ -87,6 +87,13 @@ exports.getSent = (bankName, from, to) =>{
   if(to!=null && to!=undefined && to!=""){
     sql = sql + `and createdAt <= '${to}' `;
   }
+  console.log(sql);
+  return db.load(sql);
+}
+
+exports.getBanks = () =>{
+ 
+  var sql = `SELECT * from banks where status = '1';`;
   console.log(sql);
   return db.load(sql);
 }

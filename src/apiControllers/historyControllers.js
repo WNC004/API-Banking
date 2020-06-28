@@ -136,4 +136,26 @@ router.post("/histories/sent-list", (req, res) => {
         });
 });
 
+router.post("/histories/banks", (req, res) => {
+    historyRepo
+        .getBanks()
+        .then(rows => {
+            res.statusCode = 200;
+            console.log(JSON.parse(JSON.stringify(rows)));
+            // res.json(rows);
+            res.send(
+                _.sortBy(JSON.parse(JSON.stringify(rows)), [
+                    function (o) {
+                        return o.id;
+                    }
+                ]).reverse()
+            );
+        })
+        .catch(err => {
+            console.log(err);
+            res.statusCode = 500;
+            res.end("View error log on console");
+        });
+});
+
 module.exports = router;

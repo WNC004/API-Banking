@@ -11,11 +11,11 @@ var { PAY_ACC_STATUS_OPEN, PAY_ACC_STATUS_CLOSED } = require("../fn/constant");
 //Add new user
 router.post("/user", (req, res) => {
   var id = uid(10);
-  req.body.Username = require("rand-token")
-  .generator({
-    chars: "numeric"
-  })
-  .generate(10);
+  // req.body.Username = require("rand-token")
+  // .generator({
+  //   chars: "numeric"
+  // })
+  // .generate(10);
   authRepo
     .add(req.body, id)
     .then(value => {

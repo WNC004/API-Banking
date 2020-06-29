@@ -29,7 +29,7 @@ router.post("/user", (req, res) => {
           chars: "numeric"
         })
         .generate(8);
-      _payAcc.Type = '1'; 
+      _payAcc.type = '1'; 
       _payAcc.customerId = id,
       _payAcc.clientEmail = req.body.Email,
       _payAcc.clientName = req.body.Name,
@@ -48,6 +48,24 @@ router.post("/user", (req, res) => {
             message: err
           });
         });
+      res.statusCode = 201;
+      res.json(req.body);
+    })
+    .catch(err => {
+      console.log(err);
+      res.statusCode = 500;
+      res.end(
+        "View error log on console. Maybe Duplicate email for key f_email_UNIQUE"
+      );
+    });
+});
+//Add new staff
+router.post("/staff", (req, res) => {
+  var id = uid(10);
+  authRepo
+    .add(req.body, id)
+    .then(value => {
+      console.log(value);
       res.statusCode = 201;
       res.json(req.body);
     })

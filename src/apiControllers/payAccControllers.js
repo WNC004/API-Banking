@@ -75,7 +75,7 @@ router.get("/pay-accs-all/:customerId", (req, res) => {
     });
 });
 
-router.post("/pay-acc", (req, res) => {
+router.post("/pay-acc/saving", (req, res) => {
   const _payAcc = req.body;
   _payAcc.id = shortid.generate();
   _payAcc.createdAt = moment().format("YYYY-MM-DD HH:mm");
@@ -91,7 +91,7 @@ router.post("/pay-acc", (req, res) => {
     .generate(8);
   _payAcc.Type = '2'; 
   payAccRepo
-    .add(_payAcc)
+    .addSavingAcc(_payAcc)
     .then(() => {
       res.statusCode = 201;
       res.json(req.body);

@@ -10,6 +10,26 @@ exports.add = payAccEntity => {
     accNumber,
     balance,
     status,
+    createdAt,
+    type
+  } = payAccEntity;
+
+  const sql =
+    "insert into `payacc`(`id`, `customerId`, `clientEmail`, `clientName`, `phone`, `accNumber`, `balance`, `status`, `createdAt`,`type`)" +
+    `values('${id}', '${customerId}', '${clientEmail}','${clientName}','${phone}','${accNumber}','${balance}', '${status}', '${createdAt}',${type});`;
+  return db.save(sql);
+};
+
+exports.addSavingAcc = payAccEntity => {
+  const {
+    id,
+    customerId,
+    clientEmail,
+    clientName,
+    phone,
+    accNumber,
+    balance,
+    status,
     createdAt
   } = payAccEntity;
 

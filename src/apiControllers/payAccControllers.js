@@ -5,6 +5,7 @@ var _ = require("lodash");
 var { PAY_ACC_STATUS_OPEN, PAY_ACC_STATUS_CLOSED } = require("../fn/constant");
 
 var payAccRepo = require("../repos/payAccRepo");
+const { message } = require("openpgp");
 
 var router = express.Router();
 
@@ -185,6 +186,36 @@ router.patch("/pay-acc/status/closed", (req, res) => {
       res.json({
         status: "OK"
       });
+    })
+    .catch(err => {
+      console.log(err);
+      res.statusCode = 500;
+      res.end("View error log on console");
+    });
+});
+
+router.post("/check-balance", (req, res) => {
+  const { customerId, amount } = req.body;
+  payAccRepo
+    .checkPaymentAccByCustomerId(customerId, '1')
+    .then(rows => {
+      res.statusCode = 200;
+      var sum = 0;
+      if (rows.length > 0) {
+         sum = rows[0].balance;
+      }
+      if(parseInt(sum)>=parseInt(amount)+10000){
+        res.json({
+          key: "OK",
+          message: "Enough amount"
+        })
+      }
+      else{
+        res.json({
+          key: "Failed",
+          message: "Not enough amount"
+        })
+      }
     })
     .catch(err => {
       console.log(err);

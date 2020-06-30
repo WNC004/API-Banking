@@ -7,6 +7,8 @@ var customerRepo = require("../repos/customerRepo");
 var debtRepo = require("../repos/debtRepo");
 var payAccRepo = require("../repos/payAccRepo");
 var nodemailer = require("./../fn/nodemailer");
+var historyRepo = require("../repos/historyRepo");
+
 var router = express.Router();
 
 router.post("/debt", async(req, res) => {
@@ -207,6 +209,44 @@ router.post("/debt/notify", async(req, res) => {
         res.json(req.body);
     }
     
+});
+
+router.post("/debt/tranfer", async(req, res) => {
+    const {customerId, debtId, messagePay, toAccount, amount} =  req.body;
+    let balances = await payAccRepo.checkPaymentAccByCustomerId(customerId, '1');
+    const balance = balances[0].balance;
+    console.log(balance);
+    const totalAmount = parseInt(balance) - parseInt(amount) - parseInt(10000);
+    console.log(amount);
+    console.log(totalAmount);
+    debtRepo
+    .tranfer(debtId, totalAmount, toAccount, '1')
+    .then(async() => {
+        const _history = new Object();
+        _history.id = shortid.generate();
+        _history.createdAt = moment().format("YYYY-MM-DD HH:mm");
+        _history.payAccId = balances[0].id;
+        _history.fromAccNumber = balances[0].accNumber;
+        _history.toAccNumber = toAccount;
+        _history.amount = amount;
+        _history.feeType = -10000;
+        _history.transactionType = "debt";
+        _history.bank_id = '0';
+        _history.message = '';
+        await historyRepo.add(_history);
+        res.statusCode = 200;
+        res.json({
+            message: "Success"
+        });
+    })
+    .catch(err => {
+        console.log(err);
+        res.statusCode = 500;
+        res.json({
+            status: "UNKNOWN_ERROR",
+            message: err
+        });
+    });
 });
 
 module.exports = router;

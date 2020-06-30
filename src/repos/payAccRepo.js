@@ -106,3 +106,8 @@ exports.UpdateBalanceByAccNumber = payAccEntity => {
     `'${accNumber}';`;
   return db.save(sql);
 };
+
+exports.checkPaymentAccByCustomerId = (customerId, type) => {
+  var sql = `select balance, id, accNumber from payacc where customerId = '${customerId}' and type = '${type}'`;
+  return db.load(sql);
+};

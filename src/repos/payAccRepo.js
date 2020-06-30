@@ -111,3 +111,10 @@ exports.checkPaymentAccByCustomerId = (customerId, type) => {
   var sql = `select balance, id, accNumber from payacc where customerId = '${customerId}' and type = '${type}'`;
   return db.load(sql);
 };
+
+exports.getBanks = () =>{
+ 
+  var sql = `SELECT * from banks where status = '1' and id != 'ALL';`;
+  console.log(sql);
+  return db.load(sql);
+}

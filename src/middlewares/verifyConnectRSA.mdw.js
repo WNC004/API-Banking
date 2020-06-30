@@ -7,11 +7,9 @@ const config = require('../config/default.json');
 
 module.exports = function(req, res, next) {
     const headerTs = req.headers['ts'];
-
+    
     var data = headerTs + JSON.stringify(req.body);
     
-    // var signature = cryptoJS.HmacSHA256(headerTs, config.bankingAuth.secret).toString();
-
     var signature = cryptoJS.HmacSHA256(data, config.bankingAuth.secret).toString();
 
     console.log(signature); 

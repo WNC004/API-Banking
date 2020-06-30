@@ -1,6 +1,7 @@
 var express = require("express");
-var customerRepo = require("../repos/customerRepo");
 var payAccRepo = require("../repos/payAccRepo");
+var historyRepo = require("../repos/historyRepo");
+
 
 const jwt = require('jsonwebtoken');
 const moment = require('moment');
@@ -10,13 +11,15 @@ const cryptoJS = require('crypto-js')
 var _ = require("lodash");
 
 const config = require('../config/default.json');
-var verifyConnect = require('../middlewares/verifyConnect.mdw');
-var verifyPGP = require('../middlewares/verifyPGP.mdw');
+var verifyRSABank = require('../middlewares/verifyConnectRSA.mdw');
+var verifyPGPTransfer = require('../middlewares/verifyPGPTransfer.mdw');
+var verifyPGPBank = require('../middlewares/verifyConnectPGP.mdw');
+var verifyRSATransfer = require('../middlewares/verifyRSATransfer.mdw');
 
 
 var router = express.Router();
 
-router.get("/users", verifyConnect , async (req,res) => {
+router.get("/RSABank/users", verifyRSABank , async (req,res) => {
     // const results = await customerRepo.getCustomerById(req.body.userID);
     const results = await payAccRepo.loadConnectByAccNumber(req.body.accountID);
 
@@ -26,12 +29,54 @@ router.get("/users", verifyConnect , async (req,res) => {
 
 });
 
+router.get("/PGPBank/users", verifyPGPBank, async (req, res) => {
+    const results = await payAccRepo.loadConnectByAccNumber(req.body.accountID);
 
-router.post("/PGP/users", verifyPGP , async (req,res) => {
+    console.log(results);
+
+    res.json(results);
+})
+
+
+router.post("/PGPTransfer", verifyPGPTransfer , async (req,res) => {
     // const results = await payAccRepo.UpdateBalanceByAccNumber(req.body.accountID, req.body.newBalance);
     const accNumber = req.body.accountID;
     // newBalance = số dư cũ + tiền cần nạp;
     const newBalance = req.body.newBalance;
+    // msg = lời nhắn
+    const message = req.body.msg;
+
+    const payAccEntity = {
+    accNumber,
+    newBalance
+    }
+
+    payAccRepo
+    .UpdateBalanceByAccNumber(payAccEntity),
+    payAccRepo
+    .loadByAccNumber(accNumber)
+    .then(result => {
+        console.log(result);
+        res.statusCode = 201;
+        res.json({
+        status: "OK",
+
+        });
+    })
+    .catch(err => {
+        console.log(err);
+        res.statusCode = 500;
+        res.end("View error log on console");
+    });
+});
+
+router.post("/RSATransfer", verifyRSATransfer , async (req,res) => {
+    // const results = await payAccRepo.UpdateBalanceByAccNumber(req.body.accountID, req.body.newBalance);
+    const accNumber = req.body.accountID;
+    // newBalance = số dư cũ + tiền cần nạp;
+    const newBalance = req.body.newBalance;
+    // msg = lời nhắn
+    const message = req.body.msg;
 
     const payAccEntity = {
     accNumber,
@@ -52,6 +97,8 @@ router.post("/PGP/users", verifyPGP , async (req,res) => {
         res.statusCode = 500;
         res.end("View error log on console");
     });
+
+
 });
 
 

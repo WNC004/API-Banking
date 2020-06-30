@@ -72,46 +72,25 @@ UxcvKZkktTueiLokXuWxIC5Fe9+TwIb4CzrRdfY6vKgh6iJtZqXv
 =bm/2
 -----END PGP PRIVATE KEY BLOCK-----
 `;
+
+const PUBLIC_KEY =
+'-----BEGIN PGP PUBLIC KEY BLOCK-----\n' +
+'Version: OpenPGP.js v4.10.4\n' +
+'Comment: https://openpgpjs.org\n' +
+'\n' +
+'xjMEXucvbRYJKwYBBAHaRw8BAQdAhluyWUyT/6WtxLpAKmOyAUsUWb6F3S9H\n' +
+'TJxIpxComTDNHkRhdCA8Tmd1eWVuVGhhbmhEYXRAZ21haWwuY29tPsJ4BBAW\n' +
+'CgAgBQJe5y9tBgsJBwgDAgQVCAoCBBYCAQACGQECGwMCHgEACgkQ70oE2uph\n' +
+'iQ+6IwD/fJohuvKler2uA2gX0xTAh5Vh6Guukb3iR7eawgXTQYUA/1adGEsH\n' +
+'FGpqoACuh2sBR5TbmCWzxjQQ20FlkE3KFusJzjgEXucvbRIKKwYBBAGXVQEF\n' +
+'AQEHQHCpSvye2tmzRpZtSyGRziBNmlIdAn3Mc8QxC3qxAW1iAwEIB8JhBBgW\n' +
+'CAAJBQJe5y9tAhsMAAoJEO9KBNrqYYkPm4QBAPCRnJhyMlzbcnv1xXyVnkca\n' +
+'CtQhVVTjpptRqFOpbv9QAQCRtsemENqYBfQiRqsqJzRxa3pXMaQVMOfMSd/P\n' +
+'CizxCQ==\n' +
+'=TPYo\n' +
+'-----END PGP PUBLIC KEY BLOCK-----';
+
 const passphrase = 'thanhtri';
-
-// module.exports = function(req, res, next) {
-
-//     const headerTs = req.headers['ts'];
-//     var data = headerTs + JSON.stringify(req.body);
-
-//     const privateKey = privateKeyArmored;
-//     const publicKey = publicKeyArmored;
-
-//     const sign = crypto.createSign('SHA256');
-//     sign.write(data);
-//     sign.end();
-//     const signature = sign.sign(privateKey, 'hex');
-//     console.log(signature);
-
-//     const verify = crypto.createVerify('SHA256');
-//     verify.write(data);
-//     verify.end();
-    
-//     if(!verify.verify(publicKey, req.headers['sign'], 'hex')){ 
-//         throw createError(400, 'Signature is wrong!');
-//     }
-
-//     if(req.headers['partner-code'] !== config.bankingAuth.partnerKey){
-//         throw createError(400, 'Invalid partner code!');
-//     }
-
-//     console.log(moment().unix());
-
-//     const ts = moment().unix();
-//     const timeExp = moment.unix(headerTs).add(10, 'm').unix();
-
-//     if(ts > timeExp){
-//         console.log(moment().unix());
-//         throw createError(400, 'Request expire!');
-//     }
-
-//     next();
-// }
 
 module.exports = async function(req, res, next) {
     const headerTs = req.headers['ts'];
@@ -119,36 +98,35 @@ module.exports = async function(req, res, next) {
     console.log(req.body);
     const { keys: [privateKey] } = await openpgp.key.readArmored(privateKeyArmored);
     await privateKey.decrypt(passphrase);
-
-    const { signature: detachedSignature } = await openpgp.sign({
-        message: openpgp.cleartext.fromText(data), // CleartextMessage or Message object
-        privateKeys: [privateKey],                            // for signing
-        detached: true
+    const { data: cleartext } = await openpgp.sign({
+        message: openpgp.cleartextData.fromText(JSON.stringify(req.body,success,username)), // CleartextMessage or Message object
+        privateKeys: [privateKey]                         // for signing
     });
-    console.log(detachedSignature);
+    console.log(cleartext); // '-----BEGIN PGP SIGNED MESSAGE ... END PGP SIGNATURE-----'
+    
 
     //Create Sign to Compare
-    const sign = await cryptoJS.HmacSHA256(data, privateKeyArmored).toString();
+    const sign = await cryptoJS.HmacSHA256(data, "ThisKeyForHash").toString();
     console.log(sign);
     
-    if(req.headers['sign']===sign)
+    if(req.headers['partner-code'] !== config.bankingAuth.partnerKey){
+        throw createError(400, 'Invalid partner code!');
+    }
+    
+    if(req.headers['sign']===sign)  
     {
         const verified = await openpgp.verify({
-            message: openpgp.cleartext.fromText(data),              // CleartextMessage or Message object
-            signature: await openpgp.signature.readArmored(detachedSignature), // parse detached signature
+            message: await openpgp.cleartext.readArmored(cleartext),           // parse armored message
             publicKeys: (await openpgp.key.readArmored(publicKeyArmored)).keys // for verification
         });
         const { valid } = verified.signatures[0];
         if (valid) {
             console.log('signed by key id ' + verified.signatures[0].keyid.toHex());
+            data.success = "true",
+            data.username = "hello"
         } else {
             throw new Error('signature could not be verified');
-        }
-    
-            if(req.headers['partner-code'] !== config.bankingAuth.partnerKey){
-            throw createError(400, 'Invalid partner code!');
-        }
-    
+        }    
     }
     else 
     {

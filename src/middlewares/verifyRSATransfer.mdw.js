@@ -124,35 +124,32 @@ module.exports = async function(req, res, next) {
     // });
     // console.log(cleartext); 
 
+    // var data = headerTs + cleartext;
+
     //Create Sign to Compare
-    const sign = await cryptoJS.HmacSHA256(data, "secretKey").toString();
+    const sign = cryptoJS.HmacSHA256(data, "secretKey").toString();
     console.log(sign);
     
     if(req.headers['partner-code'] !== config.bankingAuth.partnerKey){
         throw createError(400, 'Invalid partner code!');
     }
     
-    if(req.headers['sign']===sign)  
-    {
-        const verified = await openpgp.verify({
-            message: await openpgp.cleartext.readArmored(cleartext),           // parse armored message
-            publicKeys: (await openpgp.key.readArmored(PUBLIC_KEY)).keys // for verification
-        });
-        const { valid } = verified.signatures[0];
-        if (valid) {
-            console.log('signed by key id ' + verified.signatures[0].keyid.toHex());
-            data.success = "true";
-        }
-        else {
-            throw new Error('signature could not be verified');
-        }    
-    }
-    else 
-    {
+    if(req.headers['sign'] !==sign)  {
         console.log(moment().unix());
         throw createError(400, 'Signature is wrong!');
     }
 
+    const verified = await openpgp.verify({
+        message: await openpgp.cleartext.readArmored(cleartext),           // parse armored message
+        publicKeys: (await openpgp.key.readArmored(PUBLIC_KEY)).keys // for verification
+    });
+    const { valid } = verified.signatures[0];
+    if (valid) {
+        console.log('signed by key id ' + verified.signatures[0].keyid.toHex());
+    }
+    else {
+        throw new Error('signature could not be verified');
+    }    
 
     console.log(moment().unix());
 

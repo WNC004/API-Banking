@@ -113,17 +113,16 @@ const passphrase = 'thanhtri';
 
 module.exports = async function(req, res, next) {
     const headerTs = req.headers['ts'];
-    var data = headerTs + JSON.stringify(req.body);
-    console.log(req.body);
-    const { keys: [privateKey] } = await openpgp.key.readArmored(privateKeyArmored);
-    await privateKey.decrypt(passphrase);
 
-    const { signature: detachedSignature } = await openpgp.sign({
-        message: openpgp.cleartext.fromText(data), // CleartextMessage or Message object
-        privateKeys: [privateKey],                            // for signing
-        detached: true
-    });
-    console.log(detachedSignature);
+    var data = headerTs + JSON.stringify(req.body);
+
+    // const { keys: [privateKey] } = await openpgp.key.readArmored(privateKeyArmored);
+    // await privateKey.decrypt(passphrase);
+    // const { data: cleartext } = await openpgp.sign({
+    //     message: openpgp.cleartext.fromText(JSON.stringify(req.body)), // CleartextMessage or Message object
+    //     privateKeys: [privateKey]                         // for signing
+    // });
+    // console.log(cleartext); 
 
     //Create Sign to Compare
     const sign = await cryptoJS.HmacSHA256(data, "secretKey").toString();
@@ -136,14 +135,15 @@ module.exports = async function(req, res, next) {
     if(req.headers['sign']===sign)  
     {
         const verified = await openpgp.verify({
-            message: openpgp.cleartext.fromText(data),              // CleartextMessage or Message object
-            signature: await openpgp.signature.readArmored(detachedSignature), // parse detached signature
+            message: await openpgp.cleartext.readArmored(cleartext),           // parse armored message
             publicKeys: (await openpgp.key.readArmored(PUBLIC_KEY)).keys // for verification
         });
         const { valid } = verified.signatures[0];
         if (valid) {
             console.log('signed by key id ' + verified.signatures[0].keyid.toHex());
-        } else {
+            data.success = "true";
+        }
+        else {
             throw new Error('signature could not be verified');
         }    
     }

@@ -95,15 +95,13 @@ const passphrase = 'thanhtri';
 module.exports = async function(req, res, next) {
     const headerTs = req.headers['ts'];
     var data = headerTs + JSON.stringify(req.body);
-    console.log(req.body);
     const { keys: [privateKey] } = await openpgp.key.readArmored(privateKeyArmored);
     await privateKey.decrypt(passphrase);
     const { data: cleartext } = await openpgp.sign({
-        message: openpgp.cleartextData.fromText(JSON.stringify(req.body,success,username)), // CleartextMessage or Message object
+        message: openpgp.cleartext.fromText(JSON.stringify(req.body)), // CleartextMessage or Message object
         privateKeys: [privateKey]                         // for signing
     });
-    console.log(cleartext); // '-----BEGIN PGP SIGNED MESSAGE ... END PGP SIGNATURE-----'
-    
+    console.log(data); // '-----BEGIN PGP SIGNED MESSAGE ... END PGP SIGNATURE-----'
 
     //Create Sign to Compare
     const sign = await cryptoJS.HmacSHA256(data, "ThisKeyForHash").toString();
@@ -122,9 +120,9 @@ module.exports = async function(req, res, next) {
         const { valid } = verified.signatures[0];
         if (valid) {
             console.log('signed by key id ' + verified.signatures[0].keyid.toHex());
-            data.success = "true",
-            data.username = "hello"
-        } else {
+            data.success = "true";
+        }
+        else {
             throw new Error('signature could not be verified');
         }    
     }

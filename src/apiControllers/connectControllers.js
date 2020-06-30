@@ -52,9 +52,7 @@ router.post("/PGPTransfer", verifyPGPTransfer , async (req,res) => {
     }
 
     payAccRepo
-    .UpdateBalanceByAccNumber(payAccEntity),
-    payAccRepo
-    .loadByAccNumber(accNumber)
+    .UpdateBalanceByAccNumber(payAccEntity)
     .then(result => {
         console.log(result);
         res.statusCode = 201;

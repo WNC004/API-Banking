@@ -18,7 +18,7 @@ module.exports = function(req, res, next) {
         throw createError(400, 'Signature is wrong!');
     }
 
-    if(req.headers['partner-code'] !== config.bankingAuth.partnerKey){
+    if(req.headers['partner_code'] !== config.bankingAuth.partnerKey){
         throw createError(400, 'Invalid partner code!');
     }
 

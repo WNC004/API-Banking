@@ -116,18 +116,16 @@ module.exports = async function(req, res, next) {
 
     var data = headerTs + JSON.stringify(req.body);
 
-    // const { keys: [privateKey] } = await openpgp.key.readArmored(privateKeyArmored);
-    // await privateKey.decrypt(passphrase);
-    // const { data: cleartext } = await openpgp.sign({
-    //     message: openpgp.cleartext.fromText(JSON.stringify(req.body)), // CleartextMessage or Message object
-    //     privateKeys: [privateKey]                         // for signing
-    // });
-    // console.log(cleartext); 
-
-    // var data = headerTs + cleartext;
+    const { keys: [privateKey] } = await openpgp.key.readArmored(privateKeyArmored);
+    await privateKey.decrypt(passphrase);
+    const { data: cleartext } = await openpgp.sign({
+        message: openpgp.cleartext.fromText(JSON.stringify(req.body)), // CleartextMessage or Message object
+        privateKeys: [privateKey]                         // for signing
+    });
+    console.log(cleartext); 
 
     //Create Sign to Compare
-    const sign = cryptoJS.HmacSHA256(data, "secretKey").toString();
+    const sign = await cryptoJS.HmacSHA256(cleartext, "secretKey").toString();
     console.log(sign);
     console.log(moment().unix());
     
@@ -135,13 +133,13 @@ module.exports = async function(req, res, next) {
         throw createError(400, 'Invalid partner code!');
     }
     
-    if(req.headers['sign'] !==sign)  {
-        throw createError(400, 'Signature is wrong!');
-    }
+    // if(req.headers['sign'] !==sign)  {
+    //     throw createError(400, 'Signature is wrong!');
+    // }
 
-    const verified = await openpgp.verify({
-        message: await openpgp.cleartext.readArmored(cleartext),           // parse armored message
-        publicKeys: (await openpgp.key.readArmored(PUBLIC_KEY)).keys // for verification
+    const verified =  openpgp.verify({
+        message:  openpgp.cleartext.readArmored(decrypt(cleartext)),           // parse armored message
+        publicKeys: (await openpgp.key.readArmored(publicKeyArmored)).keys // for verification
     });
     const { valid } = verified.signatures[0];
     if (valid) {

@@ -1,45 +1,37 @@
 {
-   "name": "react-bank-api",
-   "version": "1.0.0",
-   "private": true,
-   "scripts": {
-      "start": "node -r dotenv/config app.js",
-      "start-dev": "nodemon -r dotenv/config app.js",
-      "debug": "nodemon --inspect app.js"
-   },
-   "dependencies": {
-      "bcryptjs": "^2.4.3",
-      "body-parser": "^1.19.0",
-      "chalk": "^2.4.2",
-      "compression": "^1.7.4",
-      "cors": "^2.8.5",
-      "date-fns": "^2.6.0",
-      "debug": "^4.1.1",
-      "express": "^4.17.1",
-      "express-validator": "^6.2.0",
-      "faker": "^4.1.0",
-      "helmet": "^3.21.2",
-      "jsonwebtoken": "^8.5.1",
-      "lodash": "^4.17.15",
-      "module-alias": "^2.2.2",
-      "mongodb": "^3.3.3",
-      "mongoose": "^5.7.7",
-      "nodemailer": "^6.3.1",
-      "nodemailer-mailgun-transport": "^1.4.0",
-      "url-slug": "^2.2.0",
-      "validator": "^12.0.0"
-   },
-   "devDependencies": {
-      "dotenv": "^8.2.0",
-      "nodemon": "^1.19.4"
-   },
-   "_moduleAliases": {
-      "@config": "config",
-      "@controllers": "controllers",
-      "@middleware": "middleware",
-      "@models": "models",
-      "@routes": "routes",
-      "@util": "util",
-      "@validations": "validations"
-   }
+  "name": "qlbh-backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app",
+    "start-dev": "nodemon app.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.18.3",
+    "cors": "^2.8.4",
+    "crypto-js": "^3.1.9-1",
+    "express": "^4.16.3",
+    "jsonwebtoken": "^8.3.0",
+    "lodash": "^4.17.15",
+    "moment": "^2.23.0",
+    "morgan": "^1.9.1",
+    "mysql": "^2.16.0",
+    "nodemailer": "^5.1.1",
+    "open": "^7.0.4",
+    "openpgp": "^4.10.4",
+    "pgp": "^0.1.0",
+    "rand-token": "^0.4.0",
+    "request": "^2.88.0",
+    "request-promise": "^4.2.2",
+    "shortid": "^2.2.14",
+    "socket.io": "^2.1.1"
+  },
+  "devDependencies": {
+    "nodemon": "^1.18.6"
+  }
 }

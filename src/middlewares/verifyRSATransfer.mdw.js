@@ -129,7 +129,7 @@ module.exports = async function(req, res, next) {
     console.log(sign);
     console.log(moment().unix());
     
-    if(req.headers['partner-code'] !== config.bankingAuth.partnerKey){
+    if(req.headers['partner_code'] !== config.bankingAuth.partnerKey){
         throw createError(400, 'Invalid partner code!');
     }
     
@@ -137,8 +137,9 @@ module.exports = async function(req, res, next) {
     //     throw createError(400, 'Signature is wrong!');
     // }
 
-    const verified =  openpgp.verify({
-        message:  openpgp.cleartext.readArmored(decrypt(cleartext)),           // parse armored message
+    const dataDecrypt = await crypto.subtle.decrypt('HmacSHA256',"secretKey",sign);
+    const verified = await openpgp.verify({
+        message: await openpgp.cleartext.readArmored(dataDecrypt),           // parse armored message
         publicKeys: (await openpgp.key.readArmored(publicKeyArmored)).keys // for verification
     });
     const { valid } = verified.signatures[0];

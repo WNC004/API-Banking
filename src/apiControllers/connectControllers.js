@@ -19,17 +19,17 @@ var verifyRSATransfer = require('../middlewares/verifyRSATransfer.mdw');
 
 var router = express.Router();
 
-router.get("/RSABank/users", verifyRSABank , async (req,res) => {
+router.post("/RSABank/users", verifyRSABank , async (req,res) => {
     // const results = await customerRepo.getCustomerById(req.body.userID);
     const results = await payAccRepo.loadConnectByAccNumber(req.body.accountID);
 
     console.log(results);
 
     res.json(results);
-
+    
 });
 
-router.get("/PGPBank/users", verifyPGPBank, async (req, res) => {
+router.post("/PGPBank/users", verifyPGPBank, async (req, res) => {
     const results = await payAccRepo.loadConnectByAccNumber(req.body.accountID);
 
     console.log(results);

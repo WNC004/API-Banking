@@ -107,7 +107,7 @@ module.exports = async function(req, res, next) {
     const sign = await cryptoJS.HmacSHA256(data, "ThisKeyForHash").toString();
     console.log(sign);
     
-    if(req.headers['partner-code'] !== config.bankingAuth.partnerKey){
+    if(req.headers['partner_code'] !== config.bankingAuth.partnerKey){
         throw createError(400, 'Invalid partner code!');
     }
     

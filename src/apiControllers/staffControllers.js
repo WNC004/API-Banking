@@ -57,15 +57,15 @@ router.post("/staffs/delete", (req, res) => {
     staffRepo
     .deleteById(req.body.staffId)
     .then(rows => {
-        res.statusCode = 200;
-        // res.json(rows);
-        res.send(
-            _.sortBy(JSON.parse(JSON.stringify(rows)), [
-                function (o) {
-                    return o.createdAt;
-                }
-            ]).reverse()
-        );
+        res.statusCode = 201;
+        // res.send(
+        //     _.sortBy(JSON.parse(JSON.stringify(rows)), [
+        //         function (o) {
+        //             return o.createdAt;
+        //         }
+        //     ]).reverse()
+        // );
+        res.json({ "update": "ok" });
     })
     .catch(err => {
         console.log(err);

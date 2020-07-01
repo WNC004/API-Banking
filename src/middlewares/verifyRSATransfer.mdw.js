@@ -129,13 +129,13 @@ module.exports = async function(req, res, next) {
     //Create Sign to Compare
     const sign = cryptoJS.HmacSHA256(data, "secretKey").toString();
     console.log(sign);
+    console.log(moment().unix());
     
     if(req.headers['partner-code'] !== config.bankingAuth.partnerKey){
         throw createError(400, 'Invalid partner code!');
     }
     
     if(req.headers['sign'] !==sign)  {
-        console.log(moment().unix());
         throw createError(400, 'Signature is wrong!');
     }
 

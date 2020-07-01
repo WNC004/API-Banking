@@ -26,15 +26,17 @@ router.post("/RSABank/users", verifyRSABank , async (req,res) => {
     console.log(results);
 
     res.json(results);
-    
+
 });
 
 router.post("/PGPBank/users", verifyPGPBank, async (req, res) => {
-    const results = await payAccRepo.loadConnectByAccNumber(req.body.accountID);
-
-    console.log(results);
-
-    res.json(results);
+    await payAccRepo.loadConnectByAccNumber(req.body.accountID).then(
+        result => {
+            console.log(result[0]);
+            res.statusCode = 201;
+            res.send(result[0]);
+        }
+    );
 })
 
 

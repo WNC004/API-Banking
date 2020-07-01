@@ -3,11 +3,15 @@ var shortid = require("shortid");
 var moment = require("moment");
 var _ = require("lodash");
 var { PAY_ACC_STATUS_OPEN, PAY_ACC_STATUS_CLOSED } = require("../fn/constant");
+var axios = require("axios");
+var crypto = require("crypto");
 
 var payAccRepo = require("../repos/payAccRepo");
 const { message } = require("openpgp");
 
 var router = express.Router();
+
+const privateKeyRSA  = "-----BEGIN RSA PRIVATE KEY-----\nMIICXQIBAAKBgQCxMoKXFch5dEeTcnMQUDwiIMyMlZGC4f6AsONDIWNIkGqSzkui\nz7SlueYKb6DiYryxv1j98ksn1JaBnNteQZRZpgd41BaED/n34U6+wu8A1fN7UzTn\nxvW+1qxOoOtC984f1Vpolz3bqDXeuTpa9AcTVVOUWYNgCBfWm2qS6lXPoQIDAQAB\nAoGAHrTvFnmK5Sk2YiHaOMB+uzdN2yrsLW82aFy+9Voq119XaJthVhSCbJm7eKGB\nktmjc3YCWPeM+JkJf+qLxVi9+UUjXAc4BxZqGISD2p/aMKwV1KjlEhDnTPsezn3b\nY1wOBhBQUy4Js+/LPhPO5p2/sDe4OARo83YvxRyErMk+Z/UCQQDkH2NO4OctvHju\n0wPh27sRA5N+f3OXIicFUbzhekzopKuXk9CjVgfIT6BRNo5ln3Y7w9uBC/MIFYzT\npeJng44nAkEAxtn4NCw0zR1xoldSp81n2Ga/lByl742sRpKXxh27+7NEoHPEJdY/\nAGZTWI1V7hXKPZhLKyu2gPBty2y/4swY9wJBAKyu/fPV1+oNQ9Y1sjikpsTIWjxl\nqlB7r+Ic78gXVmS9Uo9Ze5RJKXb+n7Mag0x2G4A+UMktDHnQJlyItAv7z/0CQQCn\nyl0JiRO00FeGaLCyLzyk+W5GiDXsgVsQ4bl3zrdEl+wciBLG6pWWvMEvQ3Nyxqg0\neUFUWDpTaoz6zfTMZvPZAkBIqHt9wF1SQPzTU22O/jrT3MR6md/OhSyQ0Tlg7mxo\nrnorLnEjZLRLHI1HIxAqVbGyEMvsHBVG7kBrScwkO6rS\n-----END RSA PRIVATE KEY-----";
 
 router.get("/pay-accs", (req, res) => {
   payAccRepo
@@ -132,6 +136,95 @@ router.patch("/pay-acc/balance", (req, res) => {
       res.end("View error log on console");
     });
 });
+
+router.patch("/pay-acc/RSA/balance", (req, res) => {
+  const payAccId = req.body.payAccId;
+  // newBalance = số dư cũ + tiền cần nạp;
+  const newBalance = req.body.newBalance;
+  // message to rsa bank 
+  const message = req.body.message;
+  const receiveCardNumber = req.body.receiverPayAccNumber;
+  const updateBalance = req.body.updateBalance;
+
+  var ts = moment().unix();
+  console.log(ts);
+
+  const dataRSA = ts + JSON.stringify({ 
+    card_number: receiveCardNumber,
+    money: newBalance,
+    message: message,
+    card_number_sender: payAccId});
+
+  const sign = crypto.createSign('SHA256');
+  sign.write(dataRSA); // đưa data cần kí vào đây
+  const signature = sign.sign(privateKeyRSA, 'hex'); // tạo chữ kí bằng private key
+  console.log(signature);
+
+  axios.post(
+    `https://internet-banking-api-17.herokuapp.com/api/transfer-money`,
+    {
+      card_number: receiveCardNumber,
+      money: newBalance,
+      message: message,
+      card_number_sender: payAccId
+    },
+    {
+      headers: {
+        "ts": ts,
+        "partner-code": 2,
+        "sign": signature
+      }
+    }
+  )
+
+  const payAccEntity = {
+    payAccId,
+    updateBalance
+  }
+
+  payAccRepo
+    .UpdateConnectBalanceById(payAccEntity)
+    .then(result => {
+      console.log(result);
+      res.statusCode = 201;
+      res.json({
+        status: "OK"
+      });
+    })
+    .catch(err => {
+      console.log(err);
+      res.statusCode = 500;
+      res.end("View error log on console");
+    });
+});
+
+router.patch("/pay-acc/balance", (req, res) => {
+  const payAccId = req.body.payAccId;
+  // newBalance = số dư cũ + tiền cần nạp;
+  const newBalance = req.body.newBalance;
+
+  const payAccEntity = {
+    payAccId,
+    newBalance
+  }
+
+  payAccRepo
+    .UpdateBalanceById(payAccEntity)
+    .then(result => {
+      console.log(result);
+      res.statusCode = 201;
+      res.json({
+        status: "OK"
+      });
+    })
+    .catch(err => {
+      console.log(err);
+      res.statusCode = 500;
+      res.end("View error log on console");
+    });
+});
+
+
 
 
 router.get("/pay-acc/:accNumber", (req, res) => {

@@ -64,6 +64,16 @@ exports.UpdateBalanceById = payAccEntity => {
   return db.save(sql);
 };
 
+exports.UpdateConnectBalanceById = payAccEntity => {
+  const { payAccId, updateBalance } = payAccEntity;
+  var sql =
+    "update payacc set balance = " +
+    `'${updateBalance}'` +
+    " where id=" +
+    `'${payAccId}';`;
+  return db.save(sql);
+};
+
 exports.loadByAccNumber = accNumber => {
   var sql = `select * from payacc where accNumber = '${accNumber}'`;
   return db.load(sql);

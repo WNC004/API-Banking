@@ -4,14 +4,48 @@ var moment = require("moment");
 var _ = require("lodash");
 var { PAY_ACC_STATUS_OPEN, PAY_ACC_STATUS_CLOSED } = require("../fn/constant");
 var axios = require("axios");
-var crypto = require("crypto");
+const crypto = require("crypto");
+var md5 = require("md5");
 
 var payAccRepo = require("../repos/payAccRepo");
 const { message } = require("openpgp");
 
 var router = express.Router();
 
-const privateKeyRSA  = "-----BEGIN RSA PRIVATE KEY-----\nMIICXQIBAAKBgQCxMoKXFch5dEeTcnMQUDwiIMyMlZGC4f6AsONDIWNIkGqSzkui\nz7SlueYKb6DiYryxv1j98ksn1JaBnNteQZRZpgd41BaED/n34U6+wu8A1fN7UzTn\nxvW+1qxOoOtC984f1Vpolz3bqDXeuTpa9AcTVVOUWYNgCBfWm2qS6lXPoQIDAQAB\nAoGAHrTvFnmK5Sk2YiHaOMB+uzdN2yrsLW82aFy+9Voq119XaJthVhSCbJm7eKGB\nktmjc3YCWPeM+JkJf+qLxVi9+UUjXAc4BxZqGISD2p/aMKwV1KjlEhDnTPsezn3b\nY1wOBhBQUy4Js+/LPhPO5p2/sDe4OARo83YvxRyErMk+Z/UCQQDkH2NO4OctvHju\n0wPh27sRA5N+f3OXIicFUbzhekzopKuXk9CjVgfIT6BRNo5ln3Y7w9uBC/MIFYzT\npeJng44nAkEAxtn4NCw0zR1xoldSp81n2Ga/lByl742sRpKXxh27+7NEoHPEJdY/\nAGZTWI1V7hXKPZhLKyu2gPBty2y/4swY9wJBAKyu/fPV1+oNQ9Y1sjikpsTIWjxl\nqlB7r+Ic78gXVmS9Uo9Ze5RJKXb+n7Mag0x2G4A+UMktDHnQJlyItAv7z/0CQQCn\nyl0JiRO00FeGaLCyLzyk+W5GiDXsgVsQ4bl3zrdEl+wciBLG6pWWvMEvQ3Nyxqg0\neUFUWDpTaoz6zfTMZvPZAkBIqHt9wF1SQPzTU22O/jrT3MR6md/OhSyQ0Tlg7mxo\nrnorLnEjZLRLHI1HIxAqVbGyEMvsHBVG7kBrScwkO6rS\n-----END RSA PRIVATE KEY-----";
+// const privateKeyRSA  = "-----BEGIN RSA PRIVATE KEY-----\nMIICXQIBAAKBgQCxMoKXFch5dEeTcnMQUDwiIMyMlZGC4f6AsONDIWNIkGqSzkui\nz7SlueYKb6DiYryxv1j98ksn1JaBnNteQZRZpgd41BaED/n34U6+wu8A1fN7UzTn\nxvW+1qxOoOtC984f1Vpolz3bqDXeuTpa9AcTVVOUWYNgCBfWm2qS6lXPoQIDAQAB\nAoGAHrTvFnmK5Sk2YiHaOMB+uzdN2yrsLW82aFy+9Voq119XaJthVhSCbJm7eKGB\nktmjc3YCWPeM+JkJf+qLxVi9+UUjXAc4BxZqGISD2p/aMKwV1KjlEhDnTPsezn3b\nY1wOBhBQUy4Js+/LPhPO5p2/sDe4OARo83YvxRyErMk+Z/UCQQDkH2NO4OctvHju\n0wPh27sRA5N+f3OXIicFUbzhekzopKuXk9CjVgfIT6BRNo5ln3Y7w9uBC/MIFYzT\npeJng44nAkEAxtn4NCw0zR1xoldSp81n2Ga/lByl742sRpKXxh27+7NEoHPEJdY/\nAGZTWI1V7hXKPZhLKyu2gPBty2y/4swY9wJBAKyu/fPV1+oNQ9Y1sjikpsTIWjxl\nqlB7r+Ic78gXVmS9Uo9Ze5RJKXb+n7Mag0x2G4A+UMktDHnQJlyItAv7z/0CQQCn\nyl0JiRO00FeGaLCyLzyk+W5GiDXsgVsQ4bl3zrdEl+wciBLG6pWWvMEvQ3Nyxqg0\neUFUWDpTaoz6zfTMZvPZAkBIqHt9wF1SQPzTU22O/jrT3MR6md/OhSyQ0Tlg7mxo\nrnorLnEjZLRLHI1HIxAqVbGyEMvsHBVG7kBrScwkO6rS\n-----END RSA PRIVATE KEY-----";
+const privateKeyRSA= "-----BEGIN RSA PRIVATE KEY-----\nMIICXQIBAAKBgQCxMoKXFch5dEeTcnMQUDwiIMyMlZGC4f6AsONDIWNIkGqSzkui\nz7SlueYKb6DiYryxv1j98ksn1JaBnNteQZRZpgd41BaED/n34U6+wu8A1fN7UzTn\nxvW+1qxOoOtC984f1Vpolz3bqDXeuTpa9AcTVVOUWYNgCBfWm2qS6lXPoQIDAQAB\nAoGAHrTvFnmK5Sk2YiHaOMB+uzdN2yrsLW82aFy+9Voq119XaJthVhSCbJm7eKGB\nktmjc3YCWPeM+JkJf+qLxVi9+UUjXAc4BxZqGISD2p/aMKwV1KjlEhDnTPsezn3b\nY1wOBhBQUy4Js+/LPhPO5p2/sDe4OARo83YvxRyErMk+Z/UCQQDkH2NO4OctvHju\n0wPh27sRA5N+f3OXIicFUbzhekzopKuXk9CjVgfIT6BRNo5ln3Y7w9uBC/MIFYzT\npeJng44nAkEAxtn4NCw0zR1xoldSp81n2Ga/lByl742sRpKXxh27+7NEoHPEJdY/\nAGZTWI1V7hXKPZhLKyu2gPBty2y/4swY9wJBAKyu/fPV1+oNQ9Y1sjikpsTIWjxl\nqlB7r+Ic78gXVmS9Uo9Ze5RJKXb+n7Mag0x2G4A+UMktDHnQJlyItAv7z/0CQQCn\nyl0JiRO00FeGaLCyLzyk+W5GiDXsgVsQ4bl3zrdEl+wciBLG6pWWvMEvQ3Nyxqg0\neUFUWDpTaoz6zfTMZvPZAkBIqHt9wF1SQPzTU22O/jrT3MR6md/OhSyQ0Tlg7mxo\nrnorLnEjZLRLHI1HIxAqVbGyEMvsHBVG7kBrScwkO6rS\n-----END RSA PRIVATE KEY-----";
+router.post("/pay-acc/PGP/user", (req, res) => {
+  const cardNumber = req.body.card_number;
+
+  var ts = moment().unix();
+
+  var signature = md5({stk: +cardNumber} + ts + "secretKey");
+  console.log(signature);
+
+  axios.post(
+      `https://dacc-internet-banking.herokuapp.com/bank/getCustomer`,
+    {
+      stk: cardNumber
+    },
+    {
+      headers: {
+        "ts": ts,
+        "company_id": "pawGDX1Ddu",
+        "sig": signature
+      }
+    })
+    .then(result => {
+              console.log(result.data);
+              res.statusCode = 201;
+              res.json(result.data);
+            })
+    .catch(err => {
+              console.log(err);
+              res.statusCode = 500;
+              res.end("View error log on console");
+            })
+    }
+);
 
 router.get("/pay-accs", (req, res) => {
   payAccRepo
@@ -178,23 +212,35 @@ router.patch("/pay-acc/RSA/balance", (req, res) => {
     }
   )
   .then(
-    axios.spread(
-      (
-        updateReceiverPayAcc,
-      ) => {
-        if (
-          updateReceiverPayAcc.status !== 201 
-        ) {
-          console.log(err);
-          throw new Error(
-            "Something went wrong operating transaction, status ",
-          );
-        }      
-      }
-  ))
+    // axios.spread(
+    //   (
+    //     updateReceiverPayAcc,
+    //   ) => {
+    //     if (
+    //       updateReceiverPayAcc.status !== 201 
+    //     ) {
+    //       console.log(err);
+    //       throw new Error(
+    //         "Something went wrong operating transaction, status ",
+    //       );
+    //     }   
+    //     else{
+    //       console.log("Done transfer");
+    //     }   
+    //   })
+    result => {
+      console.log(result);
+      console.log("Done transfer");
+      res.statusCode = 201;
+      res.json({
+        status: "OK"
+      });}
+  )
   .catch(err => {
     console.log(err);
+    console.log("Fail getting receiver details");
   });
+
 
   const payAccEntity = {
     payAccId,
@@ -215,7 +261,6 @@ router.patch("/pay-acc/RSA/balance", (req, res) => {
       res.statusCode = 500;
       res.end("View error log on console");
     });
-
 
 });
 
@@ -244,8 +289,6 @@ router.patch("/pay-acc/balance", (req, res) => {
       res.end("View error log on console");
     });
 });
-
-
 
 
 router.get("/pay-acc/:accNumber", (req, res) => {

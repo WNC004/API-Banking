@@ -138,12 +138,13 @@ router.patch("/pay-acc/balance", (req, res) => {
 });
 
 router.patch("/pay-acc/RSA/balance", (req, res) => {
+  const senderCardNumber = req.body.senderCard;
   const payAccId = req.body.payAccId;
   // newBalance = số dư cũ + tiền cần nạp;
   const newBalance = req.body.newBalance;
   // message to rsa bank 
   const message = req.body.message;
-  const receiveCardNumber = req.body.receiverPayAccNumber;
+  const receiveCardNumber = req.body.receiveCard;
   const updateBalance = req.body.updateBalance;
 
   var ts = moment().unix();
@@ -152,8 +153,8 @@ router.patch("/pay-acc/RSA/balance", (req, res) => {
   const dataRSA = ts + JSON.stringify({ 
     card_number: receiveCardNumber,
     money: newBalance,
-    message: message,
-    card_number_sender: payAccId});
+    message: message
+  });
 
   const sign = crypto.createSign('SHA256');
   sign.write(dataRSA); // đưa data cần kí vào đây
@@ -163,19 +164,37 @@ router.patch("/pay-acc/RSA/balance", (req, res) => {
   axios.post(
     `https://internet-banking-api-17.herokuapp.com/api/transfer-money`,
     {
-      card_number: receiveCardNumber,
-      money: newBalance,
-      message: message,
-      card_number_sender: payAccId
+      card_number: +receiveCardNumber,
+      money: +newBalance,
+      message: message
     },
     {
       headers: {
         "ts": ts,
-        "partner-code": 2,
-        "sign": signature
+        "partner_code": 2,
+        "sign": signature,
+        "card_number_sender": +senderCardNumber
       }
     }
   )
+  .then(
+    axios.spread(
+      (
+        updateReceiverPayAcc,
+      ) => {
+        if (
+          updateReceiverPayAcc.status !== 201 
+        ) {
+          console.log(err);
+          throw new Error(
+            "Something went wrong operating transaction, status ",
+          );
+        }      
+      }
+  ))
+  .catch(err => {
+    console.log(err);
+  });
 
   const payAccEntity = {
     payAccId,
@@ -196,6 +215,8 @@ router.patch("/pay-acc/RSA/balance", (req, res) => {
       res.statusCode = 500;
       res.end("View error log on console");
     });
+
+
 });
 
 router.patch("/pay-acc/balance", (req, res) => {
@@ -295,7 +316,7 @@ router.post("/check-balance", (req, res) => {
       res.statusCode = 200;
       var sum = 0;
       if (rows.length > 0) {
-         sum = rows[0].balance;
+        sum = rows[0].balance;
       }
       if(parseInt(sum)>=parseInt(amount)+10000){
         res.json({

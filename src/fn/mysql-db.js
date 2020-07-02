@@ -2,16 +2,16 @@ var mysql = require("mysql");
 
 var createConnection = () => {
   return mysql.createConnection({
-    // host: "localhost",
-    // port: '3306',
-    // user: "root",
-    // password: "password",
-    // database: "banking"
+    host: "localhost",
+    port: '3306',
+    user: "root",
+    password: "root",
+    database: "banking"
     
-    host: "db4free.net",
-    user: "wnc004",
-    password: "P@ssword123456",
-    database: "wnc004"
+    // host: "db4free.net",
+    // user: "wnc004",
+    // password: "P@ssword123456",
+    // database: "wnc004"
   });
 };
 

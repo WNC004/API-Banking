@@ -12,8 +12,22 @@ const { message } = require("openpgp");
 
 var router = express.Router();
 
-// const privateKeyRSA  = "-----BEGIN RSA PRIVATE KEY-----\nMIICXQIBAAKBgQCxMoKXFch5dEeTcnMQUDwiIMyMlZGC4f6AsONDIWNIkGqSzkui\nz7SlueYKb6DiYryxv1j98ksn1JaBnNteQZRZpgd41BaED/n34U6+wu8A1fN7UzTn\nxvW+1qxOoOtC984f1Vpolz3bqDXeuTpa9AcTVVOUWYNgCBfWm2qS6lXPoQIDAQAB\nAoGAHrTvFnmK5Sk2YiHaOMB+uzdN2yrsLW82aFy+9Voq119XaJthVhSCbJm7eKGB\nktmjc3YCWPeM+JkJf+qLxVi9+UUjXAc4BxZqGISD2p/aMKwV1KjlEhDnTPsezn3b\nY1wOBhBQUy4Js+/LPhPO5p2/sDe4OARo83YvxRyErMk+Z/UCQQDkH2NO4OctvHju\n0wPh27sRA5N+f3OXIicFUbzhekzopKuXk9CjVgfIT6BRNo5ln3Y7w9uBC/MIFYzT\npeJng44nAkEAxtn4NCw0zR1xoldSp81n2Ga/lByl742sRpKXxh27+7NEoHPEJdY/\nAGZTWI1V7hXKPZhLKyu2gPBty2y/4swY9wJBAKyu/fPV1+oNQ9Y1sjikpsTIWjxl\nqlB7r+Ic78gXVmS9Uo9Ze5RJKXb+n7Mag0x2G4A+UMktDHnQJlyItAv7z/0CQQCn\nyl0JiRO00FeGaLCyLzyk+W5GiDXsgVsQ4bl3zrdEl+wciBLG6pWWvMEvQ3Nyxqg0\neUFUWDpTaoz6zfTMZvPZAkBIqHt9wF1SQPzTU22O/jrT3MR6md/OhSyQ0Tlg7mxo\nrnorLnEjZLRLHI1HIxAqVbGyEMvsHBVG7kBrScwkO6rS\n-----END RSA PRIVATE KEY-----";
-const privateKeyRSA= "-----BEGIN RSA PRIVATE KEY-----\nMIICXQIBAAKBgQCxMoKXFch5dEeTcnMQUDwiIMyMlZGC4f6AsONDIWNIkGqSzkui\nz7SlueYKb6DiYryxv1j98ksn1JaBnNteQZRZpgd41BaED/n34U6+wu8A1fN7UzTn\nxvW+1qxOoOtC984f1Vpolz3bqDXeuTpa9AcTVVOUWYNgCBfWm2qS6lXPoQIDAQAB\nAoGAHrTvFnmK5Sk2YiHaOMB+uzdN2yrsLW82aFy+9Voq119XaJthVhSCbJm7eKGB\nktmjc3YCWPeM+JkJf+qLxVi9+UUjXAc4BxZqGISD2p/aMKwV1KjlEhDnTPsezn3b\nY1wOBhBQUy4Js+/LPhPO5p2/sDe4OARo83YvxRyErMk+Z/UCQQDkH2NO4OctvHju\n0wPh27sRA5N+f3OXIicFUbzhekzopKuXk9CjVgfIT6BRNo5ln3Y7w9uBC/MIFYzT\npeJng44nAkEAxtn4NCw0zR1xoldSp81n2Ga/lByl742sRpKXxh27+7NEoHPEJdY/\nAGZTWI1V7hXKPZhLKyu2gPBty2y/4swY9wJBAKyu/fPV1+oNQ9Y1sjikpsTIWjxl\nqlB7r+Ic78gXVmS9Uo9Ze5RJKXb+n7Mag0x2G4A+UMktDHnQJlyItAv7z/0CQQCn\nyl0JiRO00FeGaLCyLzyk+W5GiDXsgVsQ4bl3zrdEl+wciBLG6pWWvMEvQ3Nyxqg0\neUFUWDpTaoz6zfTMZvPZAkBIqHt9wF1SQPzTU22O/jrT3MR6md/OhSyQ0Tlg7mxo\nrnorLnEjZLRLHI1HIxAqVbGyEMvsHBVG7kBrScwkO6rS\n-----END RSA PRIVATE KEY-----";
+const privateKeyRSA = `-----BEGIN RSA PRIVATE KEY-----
+MIICXAIBAAKBgQCTRTan89kLFCdjF3jI3OrROIGSPzU11INmuwTkL64C611dQ5IW
+duNpzAZgjFqIv3HT1wHcc2rE4Ts8C08vjwOxkQRqQtKXtPHb2ddDZIxKZ1s1/RhD
+85xfYYl+gXRNng1OxnYHlfEJ5NLA0T7LbhFpyrBLyQif2+ctT6LYN24ibwIDAQAB
+AoGARl51Hk2LMRsBMv0dLsU4wp4Ac7QWJdGUs/q6/Jm3yRdTtmO6I1fNlFjz1yBZ
+hiwMJNAAyKixpL+GgUtaG/x3I58TrAVKYn0ld43dOnNVSaY6PI+tTTLuwo26yZyD
+LqgRrzcDaVWXVNk9oNHlNm+qGajarFZsHfDUF3znINuVzqkCQQDgEEt4ruhDs3Ae
+gciVhySEBezIHcyz5VzF6uExMr2OT6dnNuJhlu9w48jSUNV85k1tMSjG7xel9N4V
+MRefc82LAkEAqELcbOAvqa8yhTvKk2CicCPk9SpdN8C1vhlTmvPmHhwUsuFCxgAc
+AF4qHuCNDtCR8DoW06EchZ6pDAm8UgsjLQJBAMNi0j1J4LZwufuQVxa1Q01xUTps
+af4Rq2XXXUomog+APE2QGbbaBLBfodZssM36klf+fz2Cbw/DyQmXxq7AL+MCQHsJ
+OQlb/T5E39pQ2FZgCSea96bWLYfBIKQ6/MmHozNNMU2ELkF+fvs93+roI/07Qhu5
+PkvNuX9zfwVQcSZFApkCQC78uNmjNkFSVR75EFASVdda4wqbIayfHtdNTW3e6f5Y
+ZoKJDhvfReoxzvA8bsBNs6TuYsvnGIMsNMxgu1IivxY=
+-----END RSA PRIVATE KEY-----`;
+
 router.post("/pay-acc/PGP/user", (req, res) => {
   const cardNumber = req.body.card_number;
 
@@ -185,15 +199,18 @@ router.patch("/pay-acc/RSA/balance", (req, res) => {
   console.log(ts);
 
   const dataRSA = ts + JSON.stringify({ 
-    card_number: receiveCardNumber,
-    money: newBalance,
+    card_number: +receiveCardNumber,
+    money: +newBalance,
     message: message
   });
 
+  var state = "";
+
   const sign = crypto.createSign('SHA256');
   sign.write(dataRSA); // đưa data cần kí vào đây
-  const signature = sign.sign(privateKeyRSA, 'hex'); // tạo chữ kí bằng private key
-  console.log(signature);
+  // Dùng cái này để verify giao dịch
+  var signatureRSA = sign.sign(privateKeyRSA, 'hex'); // tạo chữ kí bằng private key
+  console.log(signatureRSA);
 
   axios.post(
     `https://internet-banking-api-17.herokuapp.com/api/transfer-money`,
@@ -206,48 +223,37 @@ router.patch("/pay-acc/RSA/balance", (req, res) => {
       headers: {
         "ts": ts,
         "partner_code": 2,
-        "sign": signature,
+        "sign": signatureRSA,
         "card_number_sender": +senderCardNumber
       }
     }
   )
   .then(
-    // axios.spread(
-    //   (
-    //     updateReceiverPayAcc,
-    //   ) => {
-    //     if (
-    //       updateReceiverPayAcc.status !== 201 
-    //     ) {
-    //       console.log(err);
-    //       throw new Error(
-    //         "Something went wrong operating transaction, status ",
-    //       );
-    //     }   
-    //     else{
-    //       console.log("Done transfer");
-    //     }   
-    //   })
     result => {
       console.log(result);
       console.log("Done transfer");
       res.statusCode = 201;
+      state = 1;
       res.json({
         status: "OK"
-      });}
+      });
+    }
+
   )
   .catch(err => {
     console.log(err);
     console.log("Fail getting receiver details");
+    state = 0;
   });
 
-
   const payAccEntity = {
-    payAccId,
-    updateBalance
-  }
+        payAccId,
+        updateBalance
+      }
 
-  payAccRepo
+  if(state === 1)
+  {
+    payAccRepo
     .UpdateConnectBalanceById(payAccEntity)
     .then(result => {
       console.log(result);
@@ -261,7 +267,8 @@ router.patch("/pay-acc/RSA/balance", (req, res) => {
       res.statusCode = 500;
       res.end("View error log on console");
     });
-
+  }
+        
 });
 
 router.patch("/pay-acc/balance", (req, res) => {

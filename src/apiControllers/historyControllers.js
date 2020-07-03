@@ -27,6 +27,26 @@ router.post("/history", (req, res) => {
         });
 });
 
+router.post("/historyConnect", (req, res) => {
+    const _history = req.body;
+    _history.id = shortid.generate();
+    _history.createdAt = moment().format("YYYY-MM-DD HH:mm");
+    historyRepo
+        .addConnect(_history)
+        .then(() => {
+            res.statusCode = 201;
+            res.json(req.body);
+        })
+        .catch(err => {
+            console.log(err);
+            res.statusCode = 500;
+            res.json({
+                status: "UNKNOWN_ERROR",
+                message: err
+            });
+        });
+});
+
 router.get("/histories/:payAccId", (req, res) => {
     const { payAccId } = req.params;
 

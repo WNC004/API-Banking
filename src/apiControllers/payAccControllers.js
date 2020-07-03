@@ -31,15 +31,15 @@ ZoKJDhvfReoxzvA8bsBNs6TuYsvnGIMsNMxgu1IivxY=
 router.post("/pay-acc/PGP/user", (req, res) => {
   const cardNumber = req.body.card_number;
 
-  var ts = moment().unix();
+  var ts = Date.now();
 
-  var signature = md5({stk: +cardNumber} + ts + "secretKey");
+  var signature = md5({stk: +cardNumber} + ts + 'secretKey');
   console.log(signature);
 
   axios.post(
       `https://dacc-internet-banking.herokuapp.com/bank/getCustomer`,
     {
-      stk: cardNumber
+      stk: +cardNumber
     },
     {
       headers: {
@@ -204,6 +204,12 @@ router.patch("/pay-acc/RSA/balance", (req, res) => {
     message: message
   });
 
+  const payAccEntity = {
+    payAccId,
+    updateBalance
+  }
+
+
   var state = "";
 
   const sign = crypto.createSign('SHA256');
@@ -230,13 +236,25 @@ router.patch("/pay-acc/RSA/balance", (req, res) => {
   )
   .then(
     result => {
-      console.log(result);
+      console.log(result.data.status);
       console.log("Done transfer");
-      res.statusCode = 201;
-      state = 1;
-      res.json({
-        status: "OK"
-      });
+      if(result.data.status === "success!")
+      {
+        payAccRepo
+        .UpdateConnectBalanceById(payAccEntity)
+        .then(result => {
+          console.log(result);
+          res.statusCode = 201;
+          res.json({
+            status: "OK"
+          });
+        })
+        .catch(err => {
+          console.log(err);
+          res.statusCode = 500;
+          res.end("View error log on console");
+        });
+      }
     }
 
   )
@@ -246,29 +264,26 @@ router.patch("/pay-acc/RSA/balance", (req, res) => {
     state = 0;
   });
 
-  const payAccEntity = {
-        payAccId,
-        updateBalance
-      }
+  // const payAccEntity = {
+  //   payAccId,
+  //   updateBalance
+  // }
 
-  if(state === 1)
-  {
-    payAccRepo
-    .UpdateConnectBalanceById(payAccEntity)
-    .then(result => {
-      console.log(result);
-      res.statusCode = 201;
-      res.json({
-        status: "OK"
-      });
-    })
-    .catch(err => {
-      console.log(err);
-      res.statusCode = 500;
-      res.end("View error log on console");
-    });
-  }
-        
+  //   payAccRepo
+  //   .UpdateConnectBalanceById(payAccEntity)
+  //   .then(result => {
+  //     console.log(result);
+  //     res.statusCode = 201;
+  //     res.json({
+  //       status: "OK"
+  //     });
+  //   })
+  //   .catch(err => {
+  //     console.log(err);
+  //     res.statusCode = 500;
+  //     res.end("View error log on console");
+  //   });
+
 });
 
 router.patch("/pay-acc/balance", (req, res) => {

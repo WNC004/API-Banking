@@ -114,7 +114,7 @@ const passphrase = 'thanhtri';
 
 module.exports = async function(req, res, next) {
     const headerTs = req.headers['ts'];
-    var data = headerTs + req.body;
+    var data = headerTs + JSON.stringify(req.body);
 
     // const { keys: [privateKey] } = await openpgp.key.readArmored(privateKeyArmored);
     // await privateKey.decrypt(passphrase);
@@ -136,8 +136,9 @@ module.exports = async function(req, res, next) {
         throw createError(400, 'Invalid partner code!');
     }
 
-    var cleartext = req.body;
+    let {cleartext} = req.body;
     console.log(cleartext);
+
         const verified = await openpgp.verify({
             message: await openpgp.cleartext.readArmored(cleartext),           // parse armored message
             publicKeys: (await openpgp.key.readArmored(PUBLIC_KEY)).keys // for verification

@@ -104,7 +104,7 @@ router.post("/PGPTransfer", verifyPGPTransfer , async (req,res) => {
 
     historyRepo
     .addConnectPGP(req.body)
-    .then(result => {
+    .then( async(result) => {
         console.log(result);
         res.statusCode = 201;
 
@@ -122,7 +122,7 @@ router.post("/PGPTransfer", verifyPGPTransfer , async (req,res) => {
             cleartext
         });
     })
-    .catch(err => {
+    .catch(async(err) => {
         console.log(err);
         res.statusCode = 500;
         let dataRS = {success: false};

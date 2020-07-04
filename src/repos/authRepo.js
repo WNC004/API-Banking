@@ -143,3 +143,8 @@ exports.login = loginEntity => {
   }' and f_password = '${md5_pwd}'`;
   return db.load(sql);
 };
+
+exports.loadByUserName = username => {
+  var sql = `select * from users where f_username = '${username}'`;
+  return db.load(sql);
+}

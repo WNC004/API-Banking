@@ -111,9 +111,10 @@ ptXWd0TFh/edR345p5gs+6dlelo6Y690vSCo
 
 const passphrase = 'thanhtri';
 
+
 module.exports = async function(req, res, next) {
     const headerTs = req.headers['ts'];
-    // var data = headerTs + JSON.stringify(req.body);
+    var data = headerTs + JSON.stringify(req.body);
 
     // const { keys: [privateKey] } = await openpgp.key.readArmored(privateKeyArmored);
     // await privateKey.decrypt(passphrase);
@@ -121,23 +122,20 @@ module.exports = async function(req, res, next) {
     //     message: openpgp.cleartext.fromText(JSON.stringify(req.body)), // CleartextMessage or Message object
     //     privateKeys: [privateKey]                         // for signing
     // });
-    // console.log(cleartext);
 
-    // var data = ts + cleartext;
-    console.log(req.headers);
-    console.log(req.body);
-    // const sign = cryptoJS.HmacSHA256(data, config.bankingAuth.secret).toString();
-    // console.log(sign);  
+    //Create Sign to Compare
+    const sign = cryptoJS.HmacSHA256(data, config.bankingAuth.secret).toString();
+    console.log(sign);
 
-    // if(sign !== req.headers['sign']){
-    //     throw createError(400, 'Signature is wrong!');
-    // }
+    if(sign !== req.headers['sign']){
+        throw createError(400, 'Signature is wrong!');
+    }
     
     if(req.headers['partner_code'] !== config.bankingAuth.partnerKey){
         throw createError(400, 'Invalid partner code!');
     }
 
-    let cleartext = req.body;
+    let {cleartext} = req.body;
     console.log(cleartext);
         const verified = await openpgp.verify({
             message: await openpgp.cleartext.readArmored(cleartext),           // parse armored message

@@ -14,6 +14,7 @@ module.exports = function(req, res, next) {
     var signature = cryptoJS.HmacSHA256(data, secretKeyPGP).toString();
 
     console.log(signature); 
+    console.log(req.headers);
     console.log(req.headers['partner_code']);
     if(signature !== req.headers['sign']){
         throw createError(400, 'Signature is wrong!');

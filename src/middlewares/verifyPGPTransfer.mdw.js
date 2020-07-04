@@ -73,7 +73,7 @@ UxcvKZkktTueiLokXuWxIC5Fe9+TwIb4CzrRdfY6vKgh6iJtZqXv
 -----END PGP PRIVATE KEY BLOCK-----
 `;
 
-const PUBLIC_KEY =`
+const PUBLIC_KEY =
     '-----BEGIN PGP PUBLIC KEY BLOCK-----\n' +
     'Version: OpenPGP.js v4.10.4\n' +
     'Comment: https://openpgpjs.org\n' +
@@ -89,7 +89,7 @@ const PUBLIC_KEY =`
     'CizxCQ==\n' +
     '=TPYo\n' +
     '-----END PGP PUBLIC KEY BLOCK-----'
-`;
+;
 
 const passphrase = 'thanhtri';
 
@@ -117,6 +117,7 @@ module.exports = async function(req, res, next) {
     }
 
     let {cleartext} = req.body;
+    console.log(req.body);
         const verified = await openpgp.verify({
             message: await openpgp.cleartext.readArmored(cleartext),           // parse armored message
             publicKeys: (await openpgp.key.readArmored(PUBLIC_KEY)).keys // for verification

@@ -73,73 +73,38 @@ UxcvKZkktTueiLokXuWxIC5Fe9+TwIb4CzrRdfY6vKgh6iJtZqXv
 -----END PGP PRIVATE KEY BLOCK-----
 `;
 
-const PUBLIC_KEY = `
------BEGIN PGP PUBLIC KEY BLOCK-----
-Version: Keybase OpenPGP v1.0.0
-Comment: https://keybase.io/crypto
-xo0EXvtQawEEANSErn0DQrRryWljARkg7aJEL7E7miN18oldU/9rOHK64okBPi7w
-FS6uI7pK9SXzJHRF06oII3sNrm3ZkX865Y6dybOcfJHHQ7JUut/1MaqnwXoH1Uhb
-gbLJUEwGHHFzvvSg22OpwnALKAvDCsAvL1AeRbHWPgqveNnHJX2pVFGjABEBAAHN
-QVRyYW4gTmd1eWVuIE5nb2MgVHJ1b25nIChQR1Aga2V5ICkgPDE2MTI3NTlAc3R1
-ZGVudC5oY211cy5lZHUudm4+wq0EEwEKABcFAl77UGsCGy8DCwkHAxUKCAIeAQIX
-gAAKCRCDJz1aqNEFhVp2A/9jKhXKvoxCpZ5FEVqfNfIh7EnypMaXApsi7skkvhE/
-di+9n/aaELCbsVGmqqed73EhRX5LltVceq055Ranewy2L02F8yQRDDabFwdYTahI
-EMEXGDv8OnQ54PqrW82eRfoFubdnECwNPc57y+v1t7zp3ouTlXRch7QL0Fht4gz6
-Bs6NBF77UGsBBAC5Pimxeg9hZrQZIperGEV4jl1DVpu+UPLtTz9z7Q8f4YxVSIUm
-mxSSgiSYqJq3o8mFtzKFxvPEGpEq1oXsapYQLIlC/+QUOP3i6UMJlPTnVSFd9ioR
-G894FzSbn6Mne6mXLjmy+lvsAjSuSI/U/gKq9MfVB16Ra3FyRgBC5NMj4QARAQAB
-wsCDBBgBCgAPBQJe+1BrBQkPCZwAAhsuAKgJEIMnPVqo0QWFnSAEGQEKAAYFAl77
-UGsACgkQsdlN7uRTLSmiHQQApzdjc/f0TvkeyxhU7Lu7h7XrhXTwYtk60Efeus/+
-vu2vkyG1Fg73fPdA2jqY8fOXs+98rBNHQAc2qTOPRFbXDBjQdWcf2Lp1HEiDQMU1
-1gzAjFejMPyh5chv1w+0+ZeuShHHjZgxyi7lqf4NxMwhJK1heC3blYX9j2xj37By
-E8CY2gP+MRTlsXHzCFQ7UdExdgFO8dUrQFp6fOmCAzyX5vScDSqBuW3ZiC8SkiqE
-XQ9lU+YmKuoaxnMRei+oMBKb9tFuNCq41OST2bPVvaFIjQUdMzpBtWcacslmNzJR
-+AMi2CU1TRxRoEClJ/Hlb2bRy8QdWraApsEtqYM9ct86Qqv4t9nOjQRe+1BrAQQA
-u22PfdQR6PHHJX/TkI9nJYqncwB+9vD6szDPO0h0z7vVvquvnvaraaosnwBLMPj0
-7E+aUX4TY7CM00qXHxehFjcc+n4RJ/3wSSxgtHMtjc43RYZkNSrfs4ffCkrCKiCa
-49yH+NMAjp/CO+1aMYTpaybOGzlic+q2Vo9ZwpUYjv0AEQEAAcLAgwQYAQoADwUC
-XvtQawUJDwmcAAIbLgCoCRCDJz1aqNEFhZ0gBBkBCgAGBQJe+1BrAAoJEBhktTWQ
-qhGk9nwEAJ6P6Ao/9dtAXyYoNfid348OVjjqjCV/6h5ICKbFiTDTzKbww2h5psNd
-2O/LP3VvcLafgQhepxw/WU/ilLiAvR4UcIP1b48iy1aFZQtSggWg3PtUsT1Ers7C
-QsPO2SHjQGttIA5jtyodbNwnKyhh5OdpMj7BB6NXWOZ7SfkB85hz08YEALCtVlvV
-ivE1Ld9p8RhbzgtpcLqZot5GLU1MtXuSOvGwoqfNIrIVRoUksLkSub1RWRrEJ6VJ
-/owugdG38HawyPtKc/4bdrA6SY19k0lk97CPt7STcTQtCFsbdfZaI9u0x7c7cDNZ
-ptXWd0TFh/edR345p5gs+6dlelo6Y690vSCo
-=EMzc
------END PGP PUBLIC KEY BLOCK-----
-`;
-
 const passphrase = 'thanhtri';
 
 module.exports = async function(req, res, next) {
     const headerTs = req.headers['ts'];
 
-    var data = headerTs + JSON.stringify(req.body);
+    // function for signing message with privatekey 
+    // const { keys: [privateKey] } = await openpgp.key.readArmored(privateKeyArmored);
+    // await privateKey.decrypt(passphrase);
+    // const { data: cleartext } = await openpgp.sign({
+    //     message: openpgp.cleartext.fromText(req.body), // CleartextMessage or Message object
+    //     privateKeys: [privateKey]                         // for signing
+    // });
+    // console.log(cleartext); 
 
-    const { keys: [privateKey] } = await openpgp.key.readArmored(privateKeyArmored);
-    await privateKey.decrypt(passphrase);
-    const { data: cleartext } = await openpgp.sign({
-        message: openpgp.cleartext.fromText(JSON.stringify(req.body)), // CleartextMessage or Message object
-        privateKeys: [privateKey]                         // for signing
-    });
-    console.log(cleartext); 
+    // req.body = cleartext;
 
-    //Create Sign to Compare
-    const sign = await cryptoJS.HmacSHA256(cleartext, "secretKey").toString();
-    console.log(sign);
-    console.log(moment().unix());
-    
+    var data = headerTs + req.body;
+
+    var signature = cryptoJS.HmacSHA256(data, config.bankingAuth.secret).toString();
+
+    console.log(signature); 
+
+    if(signature !== req.headers['sign']){
+        throw createError(400, 'Signature is wrong!');
+    }
+
     if(req.headers['partner_code'] !== config.bankingAuth.partnerKey){
         throw createError(400, 'Invalid partner code!');
     }
-    
-    // if(req.headers['sign'] !==sign)  {
-    //     throw createError(400, 'Signature is wrong!');
-    // }
 
-    const dataDecrypt = await crypto.subtle.decrypt('HmacSHA256',"secretKey",sign);
     const verified = await openpgp.verify({
-        message: await openpgp.cleartext.readArmored(dataDecrypt),           // parse armored message
+        message: await openpgp.cleartext.readArmored(req.body),           // parse armored message
         publicKeys: (await openpgp.key.readArmored(publicKeyArmored)).keys // for verification
     });
     const { valid } = verified.signatures[0];

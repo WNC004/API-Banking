@@ -73,23 +73,6 @@ UxcvKZkktTueiLokXuWxIC5Fe9+TwIb4CzrRdfY6vKgh6iJtZqXv
 -----END PGP PRIVATE KEY BLOCK-----
 `;
 
-const PUBLIC_KEY =
-'-----BEGIN PGP PUBLIC KEY BLOCK-----\n' +
-'Version: OpenPGP.js v4.10.4\n' +
-'Comment: https://openpgpjs.org\n' +
-'\n' +
-'xjMEXucvbRYJKwYBBAHaRw8BAQdAhluyWUyT/6WtxLpAKmOyAUsUWb6F3S9H\n' +
-'TJxIpxComTDNHkRhdCA8Tmd1eWVuVGhhbmhEYXRAZ21haWwuY29tPsJ4BBAW\n' +
-'CgAgBQJe5y9tBgsJBwgDAgQVCAoCBBYCAQACGQECGwMCHgEACgkQ70oE2uph\n' +
-'iQ+6IwD/fJohuvKler2uA2gX0xTAh5Vh6Guukb3iR7eawgXTQYUA/1adGEsH\n' +
-'FGpqoACuh2sBR5TbmCWzxjQQ20FlkE3KFusJzjgEXucvbRIKKwYBBAGXVQEF\n' +
-'AQEHQHCpSvye2tmzRpZtSyGRziBNmlIdAn3Mc8QxC3qxAW1iAwEIB8JhBBgW\n' +
-'CAAJBQJe5y9tAhsMAAoJEO9KBNrqYYkPm4QBAPCRnJhyMlzbcnv1xXyVnkca\n' +
-'CtQhVVTjpptRqFOpbv9QAQCRtsemENqYBfQiRqsqJzRxa3pXMaQVMOfMSd/P\n' +
-'CizxCQ==\n' +
-'=TPYo\n' +
-'-----END PGP PUBLIC KEY BLOCK-----';
-
 const passphrase = 'thanhtri';
 
 module.exports = async function(req, res, next) {
@@ -110,9 +93,7 @@ module.exports = async function(req, res, next) {
     if(req.headers['partner_code'] !== config.bankingAuth.partnerKey){
         throw createError(400, 'Invalid partner code!');
     }
-    
-    if(req.headers['sign']===sign)  
-    {
+
         const verified = await openpgp.verify({
             message: await openpgp.cleartext.readArmored(cleartext),           // parse armored message
             publicKeys: (await openpgp.key.readArmored(publicKeyArmored)).keys // for verification
@@ -124,14 +105,7 @@ module.exports = async function(req, res, next) {
         }
         else {
             throw new Error('signature could not be verified');
-        }    
-    }
-    else 
-    {
-        console.log(moment().unix());
-        throw createError(400, 'Signature is wrong!');
-    }
-
+    }    
 
     console.log(moment().unix());
 

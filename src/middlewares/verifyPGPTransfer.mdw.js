@@ -134,10 +134,11 @@ module.exports = async function(req, res, next) {
         cleartext.indexOf('{'),
         cleartext.indexOf('}') + 1
     );
-    let data = JSON.parse(dataObj);
-    console.log(data);
+
+    let dataRS = JSON.parse(dataObj);
+    console.log(dataRS);
     
-    req.body = data;
+    req.body = dataRS;
 
     console.log(moment().unix());
 

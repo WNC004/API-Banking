@@ -97,8 +97,6 @@ router.post("/RSATransfer", verifyRSATransfer , async (req,res) => {
         res.statusCode = 500;
         res.end("View error log on console");
     });
-
-
 });
 
 

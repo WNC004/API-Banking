@@ -48,8 +48,11 @@ exports.loadByPayAccId = payAccId => {
 exports.sumReceiced = (bankName, from, to) =>{
  
   var sql = `SELECT SUM(amount) as sumAmount from history WHERE id is not null `;
-  if(bankName!=null && bankName!=undefined && bankName!="" && bankName!="ALL"){
+  if(bankName!=null && bankName!=undefined && bankName!="" && bankName!="--ALL--"){
     sql = sql + `and bank_id = '${bankName}' `;
+  }
+  else{
+    sql = sql + `and bank_id is not null `;
   }
   if(from!=null && from!=undefined && from!=""){
     sql = sql + `and createdAt >= '${from}' `;
@@ -65,8 +68,11 @@ exports.sumSent = (bankName, from, to) =>{
   //SELECT SUM(amount) as sumAmount from history WHERE transactionType='received' and createdAt >= '2020/06/13' and reatedAt <= '2020/06/26'
 
   var sql = `SELECT SUM(amount) as sumAmount from history WHERE transactionType='sent' `;
-  if(bankName!=null && bankName!=undefined && bankName!="" && bankName!="ALL"){
+  if(bankName!=null && bankName!=undefined && bankName!="" && bankName!="--ALL--"){
     sql = sql + `and bank_id = '${bankName}' `;
+  }
+  else{
+    sql = sql + `and bank_id is not null `;
   }
   if(from!=null && from!=undefined && from!=""){
     sql = sql + `and createdAt >= '${from}' `;
@@ -81,8 +87,11 @@ exports.sumSent = (bankName, from, to) =>{
 exports.getReceiced = (bankName, from, to) =>{
  
   var sql = `SELECT * from history WHERE id is not null `;
-  if(bankName!=null && bankName!=undefined && bankName!="" && bankName!="ALL"){
+  if(bankName!=null && bankName!=undefined && bankName!="" && bankName!="--ALL--"){
     sql = sql + `and bank_id = '${bankName}' `;
+  }
+  else{
+    sql = sql + `and bank_id is not null `;
   }
   if(from!=null && from!=undefined && from!=""){
     sql = sql + `and createdAt >= '${from}' `;
@@ -98,8 +107,11 @@ exports.getSent = (bankName, from, to) =>{
   //SELECT SUM(amount) as sumAmount from history WHERE transactionType='received' and createdAt >= '2020/06/13' and reatedAt <= '2020/06/26'
 
   var sql = `SELECT * from history WHERE transactionType='sent' `;
-  if(bankName!=null && bankName!=undefined && bankName!="" && bankName!="ALL"){
+  if(bankName!=null && bankName!=undefined && bankName!="" && bankName!="--ALL--"){
     sql = sql + `and bank_id = '${bankName}' `;
+  }
+  else{
+    sql = sql + `and bank_id is not null `;
   }
   if(from!=null && from!=undefined && from!=""){
     sql = sql + `and createdAt >= '${from}' `;

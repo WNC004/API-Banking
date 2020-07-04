@@ -101,5 +101,7 @@ ALTER TABLE contact ADD bank_id VARCHAR(10);
 
 -- 28/06/2020
 INSERT INTO `banks`(`id`, `bank_name`, `security_type`, `status`) VALUES ("ALL", "--ALL--","NONE",1);
-    
+
+-- 4/7/2020
+ALTER TABLE history MODIFY bank_id varchar(255);  
 commit;

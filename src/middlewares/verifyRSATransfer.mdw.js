@@ -125,6 +125,8 @@ module.exports = async function(req, res, next) {
 
     //Create Sign to Compare
     // var data = ts + cleartext;
+    console.log(req.headers);
+    console.log(req.body);
     const sign = cryptoJS.HmacSHA256(data, "secretKey").toString();
     console.log(sign);
 

@@ -73,30 +73,53 @@ UxcvKZkktTueiLokXuWxIC5Fe9+TwIb4CzrRdfY6vKgh6iJtZqXv
 -----END PGP PRIVATE KEY BLOCK-----
 `;
 
+const PUBLIC_KEY =`
+    '-----BEGIN PGP PUBLIC KEY BLOCK-----\n' +
+    'Version: OpenPGP.js v4.10.4\n' +
+    'Comment: https://openpgpjs.org\n' +
+    '\n' +
+    'xjMEXucvbRYJKwYBBAHaRw8BAQdAhluyWUyT/6WtxLpAKmOyAUsUWb6F3S9H\n' +
+    'TJxIpxComTDNHkRhdCA8Tmd1eWVuVGhhbmhEYXRAZ21haWwuY29tPsJ4BBAW\n' +
+    'CgAgBQJe5y9tBgsJBwgDAgQVCAoCBBYCAQACGQECGwMCHgEACgkQ70oE2uph\n' +
+    'iQ+6IwD/fJohuvKler2uA2gX0xTAh5Vh6Guukb3iR7eawgXTQYUA/1adGEsH\n' +
+    'FGpqoACuh2sBR5TbmCWzxjQQ20FlkE3KFusJzjgEXucvbRIKKwYBBAGXVQEF\n' +
+    'AQEHQHCpSvye2tmzRpZtSyGRziBNmlIdAn3Mc8QxC3qxAW1iAwEIB8JhBBgW\n' +
+    'CAAJBQJe5y9tAhsMAAoJEO9KBNrqYYkPm4QBAPCRnJhyMlzbcnv1xXyVnkca\n' +
+    'CtQhVVTjpptRqFOpbv9QAQCRtsemENqYBfQiRqsqJzRxa3pXMaQVMOfMSd/P\n' +
+    'CizxCQ==\n' +
+    '=TPYo\n' +
+    '-----END PGP PUBLIC KEY BLOCK-----'
+`;
+
 const passphrase = 'thanhtri';
 
 module.exports = async function(req, res, next) {
     const headerTs = req.headers['ts'];
     var data = headerTs + JSON.stringify(req.body);
-    const { keys: [privateKey] } = await openpgp.key.readArmored(privateKeyArmored);
-    await privateKey.decrypt(passphrase);
-    const { data: cleartext } = await openpgp.sign({
-        message: openpgp.cleartext.fromText(JSON.stringify(req.body)), // CleartextMessage or Message object
-        privateKeys: [privateKey]                         // for signing
-    });
-    console.log(data); // '-----BEGIN PGP SIGNED MESSAGE ... END PGP SIGNATURE-----'
+
+    // const { keys: [privateKey] } = await openpgp.key.readArmored(privateKeyArmored);
+    // await privateKey.decrypt(passphrase);
+    // const { data: cleartext } = await openpgp.sign({
+    //     message: openpgp.cleartext.fromText(JSON.stringify(req.body)), // CleartextMessage or Message object
+    //     privateKeys: [privateKey]                         // for signing
+    // });
 
     //Create Sign to Compare
-    const sign = await cryptoJS.HmacSHA256(data, "ThisKeyForHash").toString();
+    const sign = cryptoJS.HmacSHA256(data, "ThisKeyForHash").toString();
     console.log(sign);
+
+    if(sign !== req.headers['sign']){
+        throw createError(400, 'Signature is wrong!');
+    }
     
     if(req.headers['partner_code'] !== config.bankingAuth.partnerKey){
         throw createError(400, 'Invalid partner code!');
     }
 
+    let {cleartext} = req.body;
         const verified = await openpgp.verify({
             message: await openpgp.cleartext.readArmored(cleartext),           // parse armored message
-            publicKeys: (await openpgp.key.readArmored(publicKeyArmored)).keys // for verification
+            publicKeys: (await openpgp.key.readArmored(PUBLIC_KEY)).keys // for verification
         });
         const { valid } = verified.signatures[0];
         if (valid) {
@@ -106,6 +129,15 @@ module.exports = async function(req, res, next) {
         else {
             throw new Error('signature could not be verified');
     }    
+
+    let dataObj = cleartext.slice(
+        cleartext.indexOf('{'),
+        cleartext.indexOf('}') + 1
+    );
+    let data = JSON.parse(dataObj);
+    console.log(data);
+    
+    req.body = data;
 
     console.log(moment().unix());
 

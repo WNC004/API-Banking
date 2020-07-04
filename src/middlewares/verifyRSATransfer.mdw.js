@@ -114,7 +114,7 @@ const passphrase = 'thanhtri';
 
 module.exports = async function(req, res, next) {
     const headerTs = req.headers['ts'];
-    var data = headerTs + JSON.stringify(req.body);
+    var data = headerTs + req.body;
 
     // const { keys: [privateKey] } = await openpgp.key.readArmored(privateKeyArmored);
     // await privateKey.decrypt(passphrase);

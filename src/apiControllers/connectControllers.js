@@ -58,7 +58,6 @@ UxcvKZkktTueiLokXuWxIC5Fe9+TwIb4CzrRdfY6vKgh6iJtZqXv
 
 const passphrase = 'thanhtri';
 
-
 var router = express.Router();
 
 router.post("/RSABank/users", verifyRSABank , async (req,res) => {
@@ -134,32 +133,53 @@ router.post("/PGPTransfer", verifyPGPTransfer , async (req,res) => {
 });
 
 router.post("/RSATransfer", verifyRSATransfer , async (req,res) => {
-    // const results = await payAccRepo.UpdateBalanceByAccNumber(req.body.accountID, req.body.newBalance);
-    const accNumber = req.body.accountID;
-    // newBalance = số dư cũ + tiền cần nạp;
-    const newBalance = req.body.newBalance;
-    // msg = lời nhắn
-    const message = req.body.msg;
 
-    const payAccEntity = {
-    accNumber,
-    newBalance
-    }
+    const {
+        accNumber,
+        newBalance,
+        message,
+        senderName,
+        senderNumber
+    } = req.body;
 
     payAccRepo
-    .UpdateBalanceByAccNumber(payAccEntity)
-    .then(result => {
+    .UpdateBalanceByAccNumber(req.body.accNumber, req.body.newBalance)
+    .then( async(result) => {
         console.log(result);
         res.statusCode = 201;
-        res.json({
-        status: "OK"
+
+        let dataRS = {success: true};
+
+        const { keys: [privateKey] } = await openpgp.key.readArmored(privateKeyArmored);
+        await privateKey.decrypt(passphrase);
+        const { data: cleartext } = await openpgp.sign({
+            message: openpgp.cleartext.fromText(JSON.stringify(dataRS)), // CleartextMessage or Message object
+            privateKeys: [privateKey]                         // for signing
+        });
+
+        console.log(cleartext);        
+        res.send({
+            cleartext
         });
     })
-    .catch(err => {
+    .catch(async(err) => {
         console.log(err);
         res.statusCode = 500;
-        res.end("View error log on console");
+        let dataRS = {success: false};
+
+        const { keys: [privateKey] } = await openpgp.key.readArmored(privateKeyArmored);
+        await privateKey.decrypt(passphrase);
+        const { data: cleartext } = await openpgp.sign({
+            message: openpgp.cleartext.fromText(JSON.stringify(dataRS)), // CleartextMessage or Message object
+            privateKeys: [privateKey]                         // for signing
+        });
+
+        console.log(cleartext);        
+        res.send({
+            cleartext
+        });
     });
+
 });
 
 

@@ -73,47 +73,59 @@ UxcvKZkktTueiLokXuWxIC5Fe9+TwIb4CzrRdfY6vKgh6iJtZqXv
 -----END PGP PRIVATE KEY BLOCK-----
 `;
 
+const PUBLIC_KEY = "";
+
 const passphrase = 'thanhtri';
 
 module.exports = async function(req, res, next) {
     const headerTs = req.headers['ts'];
+    var data = headerTs + JSON.stringify(req.body);
 
-    // function for signing message with privatekey 
     // const { keys: [privateKey] } = await openpgp.key.readArmored(privateKeyArmored);
     // await privateKey.decrypt(passphrase);
     // const { data: cleartext } = await openpgp.sign({
-    //     message: openpgp.cleartext.fromText(req.body), // CleartextMessage or Message object
+    //     message: openpgp.cleartext.fromText(JSON.stringify(req.body)), // CleartextMessage or Message object
     //     privateKeys: [privateKey]                         // for signing
     // });
-    // console.log(cleartext); 
+    // console.log(cleartext);
 
-    // req.body = cleartext;
+    //Create Sign to Compare
+    // var data = ts + cleartext;
+    const sign = cryptoJS.HmacSHA256(data, "secretKey").toString();
+    console.log(sign);
 
-    var data = headerTs + req.body;
-
-    var signature = cryptoJS.HmacSHA256(data, config.bankingAuth.secret).toString();
-
-    console.log(signature); 
-
-    if(signature !== req.headers['sign']){
+    if(sign !== req.headers['sign']){
         throw createError(400, 'Signature is wrong!');
     }
-
+    
     if(req.headers['partner_code'] !== config.bankingAuth.partnerKey){
         throw createError(400, 'Invalid partner code!');
     }
 
-    const verified = await openpgp.verify({
-        message: await openpgp.cleartext.readArmored(req.body),           // parse armored message
-        publicKeys: (await openpgp.key.readArmored(publicKeyArmored)).keys // for verification
-    });
-    const { valid } = verified.signatures[0];
-    if (valid) {
-        console.log('signed by key id ' + verified.signatures[0].keyid.toHex());
-    }
-    else {
-        throw new Error('signature could not be verified');
+    let {cleartext} = req.body;
+    console.log(req.body);
+        const verified = await openpgp.verify({
+            message: await openpgp.cleartext.readArmored(cleartext),           // parse armored message
+            publicKeys: (await openpgp.key.readArmored(PUBLIC_KEY)).keys // for verification
+        });
+        const { valid } = verified.signatures[0];
+        if (valid) {
+            console.log('signed by key id ' + verified.signatures[0].keyid.toHex());
+            data.success = "true";
+        }
+        else {
+            throw new Error('signature could not be verified');
     }    
+
+    let dataObj = cleartext.slice(
+        cleartext.indexOf('{'),
+        cleartext.indexOf('}') + 1
+    );
+
+    let dataRS = JSON.parse(dataObj);
+    console.log(dataRS);
+    
+    req.body = dataRS;
 
     console.log(moment().unix());
 

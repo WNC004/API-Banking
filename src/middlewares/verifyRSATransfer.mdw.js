@@ -113,7 +113,7 @@ const passphrase = 'thanhtri';
 
 module.exports = async function(req, res, next) {
     const headerTs = req.headers['ts'];
-    var data = headerTs + JSON.stringify(req.body);
+    // var data = headerTs + JSON.stringify(req.body);
 
     // const { keys: [privateKey] } = await openpgp.key.readArmored(privateKeyArmored);
     // await privateKey.decrypt(passphrase);
@@ -126,12 +126,12 @@ module.exports = async function(req, res, next) {
     // var data = ts + cleartext;
     console.log(req.headers);
     console.log(req.body);
-    const sign = cryptoJS.HmacSHA256(data, "secretKey").toString();
-    console.log(sign);
+    // const sign = cryptoJS.HmacSHA256(data, config.bankingAuth.secret).toString();
+    // console.log(sign);  
 
-    if(sign !== req.headers['sign']){
-        throw createError(400, 'Signature is wrong!');
-    }
+    // if(sign !== req.headers['sign']){
+    //     throw createError(400, 'Signature is wrong!');
+    // }
     
     if(req.headers['partner_code'] !== config.bankingAuth.partnerKey){
         throw createError(400, 'Invalid partner code!');

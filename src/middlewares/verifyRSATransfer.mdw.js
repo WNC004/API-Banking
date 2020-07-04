@@ -126,7 +126,8 @@ module.exports = async function(req, res, next) {
     //Create Sign to Compare
     const sign = cryptoJS.HmacSHA256(data, config.bankingAuth.secret).toString();
     console.log(sign);
-
+    console.log(req.headers);
+    console.log(req.body);
     if(sign !== req.headers['sign']){
         throw createError(400, 'Signature is wrong!');
     }

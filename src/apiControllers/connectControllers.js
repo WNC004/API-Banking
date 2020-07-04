@@ -84,7 +84,7 @@ router.post("/PGPBank/users", verifyPGPBank, async (req, res) => {
 
 router.post("/PGPTransfer", verifyPGPTransfer , async (req,res) => {
 
-    const {accNumber, newBalance, message, senderName,senderNumber} = req.body;
+    // const {accNumber, newBalance, message, senderName,senderNumber} = req.body;
     
     const {
         accNumber,
@@ -92,7 +92,7 @@ router.post("/PGPTransfer", verifyPGPTransfer , async (req,res) => {
         message,
         senderName,
         senderNumber
-    }
+    } = req.body;
 
     // const payAccEntity = {
     // accNumber,

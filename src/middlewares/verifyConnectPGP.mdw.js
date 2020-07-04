@@ -20,7 +20,7 @@ module.exports = function(req, res, next) {
         throw createError(400, 'Signature is wrong!');
     }
 
-    if(req.headers['partner_code'] !== 2){
+    if(req.headers['partner_code'] !== "2"){
         throw createError(400, 'Invalid partner code!');
     }
 

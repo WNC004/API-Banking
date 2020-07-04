@@ -71,8 +71,8 @@ router.post("/RSABank/users", verifyRSABank , async (req,res) => {
 
 });
 
-router.post("/PGPBank/users", verifyPGPBank, async (req, res) => {
-    await payAccRepo.loadConnectByAccNumber(req.body.accountID).then(
+router.post("/PGPBank/users", verifyPGPBank, (req, res) => {
+    payAccRepo.loadConnectByAccNumber(req.body.accountID).then(
         result => {
             console.log(result[0]);
             res.statusCode = 201;

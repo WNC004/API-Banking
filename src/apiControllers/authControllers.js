@@ -9,8 +9,19 @@ var router = express.Router();
 var payAccRepo = require("../repos/payAccRepo");
 var { PAY_ACC_STATUS_OPEN, PAY_ACC_STATUS_CLOSED } = require("../fn/constant");
 //Add new user
-router.post("/user", (req, res) => {
-  var id = uid(10);
+router.post("/user", async(req, res) => {
+  const username = req.body.Username;
+  let user = await authRepo.loadByUserName(username);
+  if (user.length > 0 ) {
+    console.log("ac");
+    res.statusCode = 204;
+    res.json({
+      message: "This username does already exists"
+    });
+    
+  }
+  else{
+    var id = uid(10);
   // req.body.Username = require("rand-token")
   // .generator({
   //   chars: "numeric"
@@ -58,6 +69,8 @@ router.post("/user", (req, res) => {
         "View error log on console. Maybe Duplicate email for key f_email_UNIQUE"
       );
     });
+  }
+  
 });
 //Add new staff
 router.post("/staff", (req, res) => {

@@ -137,8 +137,8 @@ module.exports = async function(req, res, next) {
         throw createError(400, 'Invalid partner code!');
     }
 
-    let {cleartext} = req.body;
-    console.log(req.body);
+    let cleartext = req.body;
+    console.log(cleartext);
         const verified = await openpgp.verify({
             message: await openpgp.cleartext.readArmored(cleartext),           // parse armored message
             publicKeys: (await openpgp.key.readArmored(PUBLIC_KEY)).keys // for verification

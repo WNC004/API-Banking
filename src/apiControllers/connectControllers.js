@@ -94,16 +94,8 @@ router.post("/PGPTransfer", verifyPGPTransfer , async (req,res) => {
         senderNumber
     } = req.body;
 
-    // const payAccEntity = {
-    // accNumber,
-    // newBalance,
-    // message,
-    // senderName,
-    // senderNumber
-    // }
-
-    historyRepo
-    .addConnectPGP(req.body)
+    payAccRepo
+    .UpdateBalanceByAccNumber(req.body.accNumber, req.body.newBalance)
     .then( async(result) => {
         console.log(result);
         res.statusCode = 201;

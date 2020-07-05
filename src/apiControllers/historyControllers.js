@@ -70,6 +70,29 @@ router.get("/histories/:payAccId", (req, res) => {
         });
 });
 
+router.get("/histories-acc/:accNumber", (req, res) => {
+    const { accNumber } = req.params;
+
+    historyRepo
+        .loadByPayAccNumber(accNumber)
+        .then(rows => {
+            res.statusCode = 200;
+            // res.json(rows);
+            res.send(
+                _.sortBy(JSON.parse(JSON.stringify(rows)), [
+                    function (o) {
+                        return o.createdAt;
+                    }
+                ]).reverse()
+            );
+        })
+        .catch(err => {
+            console.log(err);
+            res.statusCode = 500;
+            res.end("View error log on console");
+        });
+});
+
 router.post("/histories/received", (req, res) => {
     const { bankName, from, to } = req.body;
 

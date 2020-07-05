@@ -60,6 +60,12 @@ exports.loadByPayAccId = payAccId => {
   return db.load(sql);
 };
 
+exports.loadByPayAccNumber = accNumber => {
+  // var sql = `select * from history where payAccId = '${payAccId}'`;
+  var sql = `SELECT *  FROM history where (fromAccNumber = ${accNumber} or toAccNumber = ${accNumber}) AND (Cast(createdAt as datetime) > DATE_ADD(NOW(), INTERVAL - 30 DAY));`
+  return db.load(sql);
+};
+
 exports.sumReceiced = (bankName, from, to) =>{
  
   var sql = `SELECT SUM(amount) as sumAmount from history WHERE id is not null `;

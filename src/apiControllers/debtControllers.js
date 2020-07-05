@@ -232,7 +232,7 @@ router.post("/debt/tranfer", async(req, res) => {
         _history.feeType = -10000;
         _history.transactionType = "debt";
         _history.bank_id = '0';
-        _history.message = '';
+        _history.message = messagePay;
         await historyRepo.add(_history);
         res.statusCode = 200;
         res.json({
@@ -248,5 +248,23 @@ router.post("/debt/tranfer", async(req, res) => {
         });
     });
 });
+
+router.post("/debt/send-otp", (req, res) => {
+    const { clientEmail, clientName } = req.body;
+    const otp = require("rand-token")
+      .generator({
+        chars: "numeric"
+      })
+      .generate(6);
+  
+    const verifyEntity = {
+      clientEmail,
+      clientName,
+      otp
+    };
+    nodemailer.sendMail(verifyEntity);
+    res.statusCode = 201;
+    res.json({ otp: otp });
+  });
 
 module.exports = router;

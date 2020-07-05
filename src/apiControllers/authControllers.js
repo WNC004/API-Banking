@@ -73,8 +73,19 @@ router.post("/user", async(req, res) => {
   
 });
 //Add new staff
-router.post("/staff", (req, res) => {
-  var id = uid(10);
+router.post("/staff", async(req, res) => {
+  const username = req.body.Username;
+  let user = await authRepo.loadByUserName(username);
+  if (user.length > 0 ) {
+    console.log("ac");
+    res.statusCode = 204;
+    res.json({
+      message: "This username does already exists"
+    });
+    
+  }
+  else {
+    var id = uid(10);
   authRepo
     .add(req.body, id)
     .then(value => {
@@ -89,6 +100,8 @@ router.post("/staff", (req, res) => {
         "View error log on console. Maybe Duplicate email for key f_email_UNIQUE"
       );
     });
+  }
+  
 });
 //handle login
 router.post("/login", (req, res) => {

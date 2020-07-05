@@ -107,8 +107,15 @@ exports.loadPaymentAccByCustomerId = (customerId, type) => {
   return db.load(sql);
 };
 
-exports.UpdateBalanceByAccNumber = payAccEntity => {
-  const { accNumber, newBalance } = payAccEntity;
+exports.UpdateBalanceByAccNumber = (accNumber, newBalance) => {
+  // const { accNumber, newBalance } = payAccEntity;
+    // const payAccEntity = {
+    // accNumber,
+    // newBalance,
+    // message,
+    // senderName,
+    // senderNumber
+    // }
   var sql =
     "update payacc set balance = " +
     `'${newBalance}'` +

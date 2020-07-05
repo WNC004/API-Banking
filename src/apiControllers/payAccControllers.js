@@ -8,9 +8,19 @@ const crypto = require("crypto");
 var md5 = require("md5");
 
 var payAccRepo = require("../repos/payAccRepo");
+var openpgp = require('openpgp'); // use as CommonJS, AMD, ES6 module or via window.openpgp
+
+openpgp.initWorker({
+    path: 'openpgp.worker.js'
+}) // set the relative web worker path
+
+openpgp.config.aead_protect = true
+
 const { message } = require("openpgp");
 
 var router = express.Router();
+
+const passphrase = 'thanhtri';
 
 const privateKeyRSA = `-----BEGIN RSA PRIVATE KEY-----
 MIICXAIBAAKBgQCTRTan89kLFCdjF3jI3OrROIGSPzU11INmuwTkL64C611dQ5IW
@@ -28,6 +38,40 @@ PkvNuX9zfwVQcSZFApkCQC78uNmjNkFSVR75EFASVdda4wqbIayfHtdNTW3e6f5Y
 ZoKJDhvfReoxzvA8bsBNs6TuYsvnGIMsNMxgu1IivxY=
 -----END RSA PRIVATE KEY-----`;
 
+
+const privateKeyArmored = `-----BEGIN PGP PRIVATE KEY BLOCK-----
+Version: Keybase OpenPGP v1.0.0
+Comment: https://keybase.io/crypto
+
+xcASBF7EBOkTBSuBBAAiAwMEhHUQtUWpYwuQjohrUEFroqaBA1G1zTz1nVu6s0iM
+xgVO/YKeUopqBRM8eYNXdcNqAUwkAljNedWMtXoP3N+HXbTpWjCqjCN07I2KwRVd
+hNOoHb92CcZ9ZWAQejAUo/9r/gkDCOZzj/GsgVDqYOmSJem1wHFrOGbFylQOHblZ
+YAK4JiL7pGyiRfTuUj1NL7d+VJHDx5z//SnNcZWwyU6E9qpaGifCWdwhC5RdE6C0
+R1xBNV5XVsTrnt8OhCg565Zl9VbhzR10cmkgKG5vbmUpIDx0cmkxMjNAZ21haWwu
+Y29tPsKPBBMTCgAXBQJexATpAhsvAwsJBwMVCggCHgECF4AACgkQPm/RXY2u3BUi
+dQF/ZApdsE3WIMdvasptRbyCAHjkH7ASuMgXzFnvv8Xsnxy3OI+agNH7/opDa0g3
+T6E2AYCnaFjJINtmRuzPkc33J+TUwRgeBrqGc9hr4latKDg9IUuWw/ZkbmXQWc2/
+1N1pGzvHpQRexATpEwgqhkjOPQMBBwIDBDxrGcbc/86pDt5OtuqkAT3aVsB0/4sk
+W+TSfq9w6WaRuF5ruRujPe26PMb4cEeZeigtMAJBwvcJTviInw+kg5j+CQMIVj2l
+6BfYykZglGOQMRSQkXCcBmMHpuSFAQXN5gKqLHxa/nLEtIMtZjEbc4NQ7v0PCNmS
++VAhbP1eXlmFH8c7szbfQ5MMVjLuceWiYy7I2MLAJwQYEwoADwUCXsQE6QUJDwmc
+AAIbLgBqCRA+b9Fdja7cFV8gBBkTCgAGBQJexATpAAoJELkvk8MRq0hIbrgA/RWE
+e6tt2EU+KYCTHmcjoMegpwSprChlr4Rhb5Pb4mIdAP9SUusoE/Mylge6LzsJlxzc
+Zbmq05VEY9f/7FXvot01JXnPAX4rXrUImAxSPRZP4mu67U43H89k+nWttMBWpAUO
+V9Qbnd78I6l04bi6wXxFw9jLRIsBfRiWN8NW21Ra8xzgeM/FqRHW1jJvnMRbQ5pg
+q89Z25U/eY9OZgFArIYzUb7/O7kn2celBF7EBOkTCCqGSM49AwEHAgMEn4cryDH7
+kE4ClyYdwSeiyqveD7r6OjkWyXK+xsZxdX81r5sY+m0ibbxzU4m88BOURtrXbT31
+/L2CRh6o6LcZO/4JAwi4lr49VkHc1WBUpl5Aws0/UPSeWqvr8H/zLuZXUn8fjxL1
+iujjHntNh+wW9jCgE2pRMLPz6pIY7DpLmJs4gW9btLU6KcMV22PPNK70kmc2wsAn
+BBgTCgAPBQJexATpBQkPCZwAAhsuAGoJED5v0V2NrtwVXyAEGRMKAAYFAl7EBOkA
+CgkQb3x/wP1uVs9avQD/S/Bh3SMzxFf0SGoX3n2y7FhrJq77gg7TC7dYpMfXpjsB
+AP3+RQ0cnCloYenJzJys/8flT6JE5FjoFKWepQvpv7wdv8kBgLvQw3iWNW4yXlRc
+gBWQT5YdC2MeLwP/Z0TA2IouqQLngZ+1cS+ThYNHSDRvb++B0gF7BqpvvcWpt27/
+UxcvKZkktTueiLokXuWxIC5Fe9+TwIb4CzrRdfY6vKgh6iJtZqXv
+=bm/2
+-----END PGP PRIVATE KEY BLOCK-----
+`;
+
 router.post("/pay-acc/PGP/user", (req, res) => {
   const cardNumber = req.body.card_number;
 
@@ -44,14 +88,15 @@ router.post("/pay-acc/PGP/user", (req, res) => {
     {
       headers: {
         "ts": ts,
-        "company_id": "pawGDX1Ddu",
+        "company_id": 2,
         "sig": signature
       }
     })
     .then(result => {
-              console.log(result.data);
+              
+              console.log(result);
               res.statusCode = 201;
-              res.json(result.data);
+              res.send(result.data);
             })
     .catch(err => {
               console.log(err);
@@ -185,6 +230,100 @@ router.patch("/pay-acc/balance", (req, res) => {
     });
 });
 
+// pgp transfer money
+
+router.patch("/pay-acc/PGP/balance", async (req, res) => {
+  const senderCardNumber = req.body.senderCard;
+  const payAccId = req.body.payAccId;
+  // newBalance = tiền cần nạp +- tiền phí;
+  const newBalance = req.body.newBalance;
+  // message to rsa bank 
+  const message = req.body.message;
+  const receiveCardNumber = req.body.receiveCard;
+  const updateBalance = req.body.updateBalance;
+
+  var ts = Date.now();
+  console.log(ts);
+
+  const dataPGP = { 
+    accountRequest: +senderCardNumber,
+    nameRequest: "nguyen thanh tri",
+    message: message,
+    stk: +receiveCardNumber,
+    amountOfMoney: +newBalance
+  };
+
+  /// ky bdx 
+    const { keys: [privateKey] } = await openpgp.key.readArmored(privateKeyArmored);
+    await privateKey.decrypt(passphrase);
+    const { data: cleartext } = await openpgp.sign({
+        message: openpgp.cleartext.fromText(JSON.stringify(dataPGP)), // CleartextMessage or Message object
+        privateKeys: [privateKey]                         // for signing
+    });
+    console.log(cleartext);
+
+    var signature = md5({cleartext} + ts + 'secretKey');
+    console.log(signature);
+
+  const payAccEntity = {
+    payAccId,
+    updateBalance
+  }
+
+
+  axios.post(
+    `https://dacc-internet-banking.herokuapp.com/bank/pgpTransferMoney`,
+    {
+      cleartext
+    },
+    {
+      headers: {
+        "ts": ts,
+        "company_id": 2,
+        "sig": signature
+      }
+    }
+  )
+  .then(
+    result => {
+      console.log(result.data);
+      console.log(result.data.cleartext);
+      let cleartext = result.data.cleartext;
+      let dataObj = cleartext.slice(
+        cleartext.indexOf('{'),
+        cleartext.indexOf('}') + 1
+      );
+      let data = JSON.parse(dataObj);
+      console.log(data);
+      console.log("Done verify");
+      if(data.success === true)
+      {
+        payAccRepo
+        .UpdateConnectBalanceById(payAccEntity)
+        .then(result => {
+          console.log(result);
+          res.statusCode = 201;
+          res.json({
+            status: "OK"
+          });
+        })
+        .catch(err => {
+          console.log(err);
+          res.statusCode = 500;
+          res.end("View error log on console");
+        });
+      }
+    }
+
+  )
+  .catch(err => {
+    console.log(err);
+    console.log("Fail getting receiver details");
+    state = 0;
+  });
+
+});
+
 router.patch("/pay-acc/RSA/balance", (req, res) => {
   const senderCardNumber = req.body.senderCard;
   const payAccId = req.body.payAccId;
@@ -209,8 +348,6 @@ router.patch("/pay-acc/RSA/balance", (req, res) => {
     updateBalance
   }
 
-
-  var state = "";
 
   const sign = crypto.createSign('SHA256');
   sign.write(dataRSA); // đưa data cần kí vào đây
@@ -263,26 +400,6 @@ router.patch("/pay-acc/RSA/balance", (req, res) => {
     console.log("Fail getting receiver details");
     state = 0;
   });
-
-  // const payAccEntity = {
-  //   payAccId,
-  //   updateBalance
-  // }
-
-  //   payAccRepo
-  //   .UpdateConnectBalanceById(payAccEntity)
-  //   .then(result => {
-  //     console.log(result);
-  //     res.statusCode = 201;
-  //     res.json({
-  //       status: "OK"
-  //     });
-  //   })
-  //   .catch(err => {
-  //     console.log(err);
-  //     res.statusCode = 500;
-  //     res.end("View error log on console");
-  //   });
 
 });
 

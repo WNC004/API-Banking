@@ -79,7 +79,7 @@ router.post("/pay-acc/PGP/user", (req, res) => {
 
   var signature = md5({stk: +cardNumber} + ts + 'secretKey');
   console.log(signature);
-
+  // stk pgp: 4485052950176732
   axios.post(
       `https://dacc-internet-banking.herokuapp.com/bank/getCustomer`,
     {
@@ -96,7 +96,18 @@ router.post("/pay-acc/PGP/user", (req, res) => {
               
               console.log(result);
               res.statusCode = 201;
-              res.send(result.data);
+              let name = result.data.data.name;
+              let email = result.data.data.email;
+              let phone = 'Not existed';
+        
+              let data = {
+                full_name: name,
+                email: email,
+                phone_number: phone
+              }
+              console.log(data);
+          
+              res.send(data);
             })
     .catch(err => {
               console.log(err);

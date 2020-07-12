@@ -49,6 +49,16 @@ exports.loadByCustomerId = customerId => {
   return db.load(sql);
 };
 
+exports.loadCustomerNameById = id => {
+  var sql = `select clientName as name from payacc where id = '${id}'`;
+  return db.load(sql);
+};
+
+exports.loadCustomerNameByAccNumber = id => {
+  var sql = `select clientName as name from payacc where accNumber = '${id}'`;
+  return db.load(sql);
+};
+
 exports.loadPaymentByCustomerId = customerId => {
   var sql = `select * from payacc where customerId = '${customerId}' and type = '1'`;
   return db.load(sql);
@@ -130,7 +140,6 @@ exports.checkPaymentAccByCustomerId = (customerId, type) => {
 };
 
 exports.getBanks = () =>{
- 
   var sql = `SELECT * from banks where status = '1' and id != 'ALL';`;
   console.log(sql);
   return db.load(sql);

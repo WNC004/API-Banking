@@ -72,6 +72,8 @@ UxcvKZkktTueiLokXuWxIC5Fe9+TwIb4CzrRdfY6vKgh6iJtZqXv
 -----END PGP PRIVATE KEY BLOCK-----
 `;
 
+// get pgp acc information
+
 router.post("/pay-acc/PGP/user", (req, res) => {
   const cardNumber = req.body.card_number;
 
@@ -98,7 +100,7 @@ router.post("/pay-acc/PGP/user", (req, res) => {
               res.statusCode = 201;
               let name = result.data.data.name;
               let email = result.data.data.email;
-              let phone = 'Not existed';
+              let phone = ' ';
         
               let data = {
                 full_name: name,
@@ -116,6 +118,190 @@ router.post("/pay-acc/PGP/user", (req, res) => {
             })
     }
 );
+
+// pgp transfer money
+
+router.patch("/pay-acc/PGP/balance", async (req, res) => {
+  const senderCardNumber = req.body.senderCard;
+  const payAccId = req.body.payAccId;
+  // newBalance = tiền cần nạp +- tiền phí;
+  const newBalance = req.body.newBalance;
+  // message to rsa bank 
+  const message = req.body.message;
+  const receiveCardNumber = req.body.receiveCard;
+  const updateBalance = req.body.updateBalance;
+
+  var ts = Date.now();
+  console.log(ts);
+  console.log(payAccId);
+  var senderName = "";
+
+  await payAccRepo.loadCustomerNameById(payAccId).then(
+    name => {
+      console.log(name);
+      senderName = name[0].name;
+      console.log(senderName);
+    }
+  )
+
+  const dataPGP = { 
+    accountRequest: +senderCardNumber,
+    nameRequest: senderName,
+    message: message,
+    stk: +receiveCardNumber,
+    amountOfMoney: +newBalance
+  };
+
+  /// ky bdx 
+    const { keys: [privateKey] } = await openpgp.key.readArmored(privateKeyArmored);
+    await privateKey.decrypt(passphrase);
+    const { data: cleartext } = await openpgp.sign({
+        message: openpgp.cleartext.fromText(JSON.stringify(dataPGP)), // CleartextMessage or Message object
+        privateKeys: [privateKey]                         // for signing
+    });
+    console.log(cleartext);
+
+    var signature = md5({cleartext} + ts + 'secretKey');
+    console.log(signature);
+
+  const payAccEntity = {
+    payAccId,
+    updateBalance
+  }
+
+
+  axios.post(
+    `https://dacc-internet-banking.herokuapp.com/bank/pgpTransferMoney`,
+    {
+      cleartext
+    },
+    {
+      headers: {
+        "ts": ts,
+        "company_id": 2,
+        "sig": signature
+      }
+    }
+  )
+  .then(
+    result => {
+      console.log(result.data);
+      console.log(result.data.cleartext);
+      let cleartext = result.data.cleartext;
+      let dataObj = cleartext.slice(
+        cleartext.indexOf('{'),
+        cleartext.indexOf('}') + 1
+      );
+      let data = JSON.parse(dataObj);
+      console.log(data);
+      console.log("Done verify");
+      if(data.success === true)
+      {
+        payAccRepo
+        .UpdateConnectBalanceById(payAccEntity)
+        .then(result => {
+          console.log(result);
+          res.statusCode = 201;
+          res.json({
+            status: "OK"
+          });
+        })
+        .catch(err => {
+          console.log(err);
+          res.statusCode = 500;
+          res.end("View error log on console");
+        });
+      }
+    }
+
+  )
+  .catch(err => {
+    console.log(err);
+    console.log("Fail getting receiver details");
+    state = 0;
+  });
+
+});
+
+// RSA transfer money 
+router.patch("/pay-acc/RSA/balance", (req, res) => {
+  const senderCardNumber = req.body.senderCard;
+  const payAccId = req.body.payAccId;
+  // newBalance = số dư cũ + tiền cần nạp;
+  const newBalance = req.body.newBalance;
+  // message to rsa bank 
+  const message = req.body.message;
+  const receiveCardNumber = req.body.receiveCard;
+  const updateBalance = req.body.updateBalance;
+
+  var ts = moment().unix();
+  console.log(ts);
+
+  const dataRSA = ts + JSON.stringify({ 
+    card_number: +receiveCardNumber,
+    money: +newBalance,
+    message: message
+  });
+
+  const payAccEntity = {
+    payAccId,
+    updateBalance
+  }
+
+
+  const sign = crypto.createSign('SHA256');
+  sign.write(dataRSA); // đưa data cần kí vào đây
+  // Dùng cái này để verify giao dịch
+  var signatureRSA = sign.sign(privateKeyRSA, 'hex'); // tạo chữ kí bằng private key
+  console.log(signatureRSA);
+
+  axios.post(
+    `https://internet-banking-api-17.herokuapp.com/api/transfer-money`,
+    {
+      card_number: +receiveCardNumber,
+      money: +newBalance,
+      message: message
+    },
+    {
+      headers: {
+        "ts": ts,
+        "partner_code": 2,
+        "sign": signatureRSA,
+        "card_number_sender": +senderCardNumber
+      }
+    }
+  )
+  .then(
+    result => {
+      console.log(result.data.status);
+      console.log("Done transfer");
+      if(result.data.status === "success!")
+      {
+        payAccRepo
+        .UpdateConnectBalanceById(payAccEntity)
+        .then(result => {
+          console.log(result);
+          res.statusCode = 201;
+          res.json({
+            status: "OK"
+          });
+        })
+        .catch(err => {
+          console.log(err);
+          res.statusCode = 500;
+          res.end("View error log on console");
+        });
+      }
+    }
+
+  )
+  .catch(err => {
+    console.log(err);
+    console.log("Fail getting receiver details");
+    state = 0;
+  });
+
+});
 
 router.get("/pay-accs", (req, res) => {
   payAccRepo
@@ -241,178 +427,7 @@ router.patch("/pay-acc/balance", (req, res) => {
     });
 });
 
-// pgp transfer money
 
-router.patch("/pay-acc/PGP/balance", async (req, res) => {
-  const senderCardNumber = req.body.senderCard;
-  const payAccId = req.body.payAccId;
-  // newBalance = tiền cần nạp +- tiền phí;
-  const newBalance = req.body.newBalance;
-  // message to rsa bank 
-  const message = req.body.message;
-  const receiveCardNumber = req.body.receiveCard;
-  const updateBalance = req.body.updateBalance;
-
-  var ts = Date.now();
-  console.log(ts);
-
-  const dataPGP = { 
-    accountRequest: +senderCardNumber,
-    nameRequest: "nguyen thanh tri",
-    message: message,
-    stk: +receiveCardNumber,
-    amountOfMoney: +newBalance
-  };
-
-  /// ky bdx 
-    const { keys: [privateKey] } = await openpgp.key.readArmored(privateKeyArmored);
-    await privateKey.decrypt(passphrase);
-    const { data: cleartext } = await openpgp.sign({
-        message: openpgp.cleartext.fromText(JSON.stringify(dataPGP)), // CleartextMessage or Message object
-        privateKeys: [privateKey]                         // for signing
-    });
-    console.log(cleartext);
-
-    var signature = md5({cleartext} + ts + 'secretKey');
-    console.log(signature);
-
-  const payAccEntity = {
-    payAccId,
-    updateBalance
-  }
-
-
-  axios.post(
-    `https://dacc-internet-banking.herokuapp.com/bank/pgpTransferMoney`,
-    {
-      cleartext
-    },
-    {
-      headers: {
-        "ts": ts,
-        "company_id": 2,
-        "sig": signature
-      }
-    }
-  )
-  .then(
-    result => {
-      console.log(result.data);
-      console.log(result.data.cleartext);
-      let cleartext = result.data.cleartext;
-      let dataObj = cleartext.slice(
-        cleartext.indexOf('{'),
-        cleartext.indexOf('}') + 1
-      );
-      let data = JSON.parse(dataObj);
-      console.log(data);
-      console.log("Done verify");
-      if(data.success === true)
-      {
-        payAccRepo
-        .UpdateConnectBalanceById(payAccEntity)
-        .then(result => {
-          console.log(result);
-          res.statusCode = 201;
-          res.json({
-            status: "OK"
-          });
-        })
-        .catch(err => {
-          console.log(err);
-          res.statusCode = 500;
-          res.end("View error log on console");
-        });
-      }
-    }
-
-  )
-  .catch(err => {
-    console.log(err);
-    console.log("Fail getting receiver details");
-    state = 0;
-  });
-
-});
-
-router.patch("/pay-acc/RSA/balance", (req, res) => {
-  const senderCardNumber = req.body.senderCard;
-  const payAccId = req.body.payAccId;
-  // newBalance = số dư cũ + tiền cần nạp;
-  const newBalance = req.body.newBalance;
-  // message to rsa bank 
-  const message = req.body.message;
-  const receiveCardNumber = req.body.receiveCard;
-  const updateBalance = req.body.updateBalance;
-
-  var ts = moment().unix();
-  console.log(ts);
-
-  const dataRSA = ts + JSON.stringify({ 
-    card_number: +receiveCardNumber,
-    money: +newBalance,
-    message: message
-  });
-
-  const payAccEntity = {
-    payAccId,
-    updateBalance
-  }
-
-
-  const sign = crypto.createSign('SHA256');
-  sign.write(dataRSA); // đưa data cần kí vào đây
-  // Dùng cái này để verify giao dịch
-  var signatureRSA = sign.sign(privateKeyRSA, 'hex'); // tạo chữ kí bằng private key
-  console.log(signatureRSA);
-
-  axios.post(
-    `https://internet-banking-api-17.herokuapp.com/api/transfer-money`,
-    {
-      card_number: +receiveCardNumber,
-      money: +newBalance,
-      message: message
-    },
-    {
-      headers: {
-        "ts": ts,
-        "partner_code": 2,
-        "sign": signatureRSA,
-        "card_number_sender": +senderCardNumber
-      }
-    }
-  )
-  .then(
-    result => {
-      console.log(result.data.status);
-      console.log("Done transfer");
-      if(result.data.status === "success!")
-      {
-        payAccRepo
-        .UpdateConnectBalanceById(payAccEntity)
-        .then(result => {
-          console.log(result);
-          res.statusCode = 201;
-          res.json({
-            status: "OK"
-          });
-        })
-        .catch(err => {
-          console.log(err);
-          res.statusCode = 500;
-          res.end("View error log on console");
-        });
-      }
-    }
-
-  )
-  .catch(err => {
-    console.log(err);
-    console.log("Fail getting receiver details");
-    state = 0;
-  });
-
-});
 
 router.patch("/pay-acc/balance", (req, res) => {
   const payAccId = req.body.payAccId;

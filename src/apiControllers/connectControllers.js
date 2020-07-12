@@ -80,7 +80,6 @@ router.post("/PGPBank/users", verifyPGPBank, (req, res) => {
     );
 })
 
-
 router.post("/PGPTransfer", verifyPGPTransfer , async (req,res) => {
 
     // const {accNumber, newBalance, message, senderName,senderNumber} = req.body;
@@ -93,13 +92,20 @@ router.post("/PGPTransfer", verifyPGPTransfer , async (req,res) => {
         senderNumber
     } = req.body;
 
+    const resultName = await payAccRepo.loadCustomerNameByAccNumber(accNumber);
+    await console.log(resultName);
+
+    const payAcc = await payAccRepo.loadConnectByAccNumber(accNumber);
+    await console.log(payAcc);
+    var currentBalance = payAcc[0].balance + newBalance;
+
     payAccRepo
-    .UpdateBalanceByAccNumber(req.body.accNumber, req.body.newBalance)
+    .UpdateBalanceByAccNumber(accNumber, currentBalance)
     .then( async(result) => {
         console.log(result);
         res.statusCode = 201;
 
-        let dataRS = {success: true, name: "nguyen thanh tri"};
+        let dataRS = {success: true, name: resultName[0].name};
 
         const { keys: [privateKey] } = await openpgp.key.readArmored(privateKeyArmored);
         await privateKey.decrypt(passphrase);
@@ -142,8 +148,12 @@ router.post("/RSATransfer", verifyRSATransfer , async (req,res) => {
         senderNumber
     } = req.body;
 
+    const payAcc = await payAccRepo.loadConnectByAccNumber(accNumber);
+    console.log(payAcc);
+    var currentBalance = payAcc[0].balance + newBalance;
+
     payAccRepo
-    .UpdateBalanceByAccNumber(req.body.accNumber, req.body.newBalance)
+    .UpdateBalanceByAccNumber(accNumber, currentBalance)
     .then( async(result) => {
         console.log(result);
         res.statusCode = 201;
@@ -158,9 +168,11 @@ router.post("/RSATransfer", verifyRSATransfer , async (req,res) => {
         });
 
         console.log(cleartext);        
+
         res.send({
             cleartext
         });
+
     })
     .catch(async(err) => {
         console.log(err);
@@ -179,6 +191,8 @@ router.post("/RSATransfer", verifyRSATransfer , async (req,res) => {
             cleartext
         });
     });
+
+    
 
 });
 

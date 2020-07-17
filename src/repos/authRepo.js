@@ -148,3 +148,8 @@ exports.loadByUserName = username => {
   var sql = `select * from users where f_username = '${username}'`;
   return db.load(sql);
 }
+
+exports.loadByEmail = email => {
+  var sql = `select * from users where f_email = '${email}'`;
+  return db.load(sql);
+}

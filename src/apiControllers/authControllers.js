@@ -88,13 +88,23 @@ router.post("/user", async(req, res) => {
 router.post("/staff", async(req, res) => {
   const username = req.body.Username;
   let user = await authRepo.loadByUserName(username);
-  if (user.length > 0 ) {
-    console.log("ac");
-    res.statusCode = 204;
-    res.json({
+  const emailDB = req.body.Email;
+  let email = await authRepo.loadByEmail(emailDB);
+
+  if (user.length > 0 || email.length > 0) {
+    if(user.length > 0) {
+      console.log("ac");
+      res.statusCode = 204;
+      res.json({
       message: "This username does already exists"
     });
-    
+  }else if (email.length > 0) {
+      console.log("ac");
+      res.statusCode = 202;
+      res.json({
+      message: "This email does already exists"
+    });
+  }    
   }
   else {
     var id = uid(10);

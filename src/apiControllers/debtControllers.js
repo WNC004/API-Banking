@@ -234,6 +234,13 @@ router.post("/debt/tranfer", async(req, res) => {
         _history.bank_id = '0';
         _history.message = messagePay;
         await historyRepo.add(_history);
+        let toAccountInSystem = await payAccRepo.loadByAccNumber(toAccount);
+        const toAccountId = toAccountInSystem[0].id;
+        _history.id = shortid.generate();
+        _history.payAccId = toAccountId;
+        _history.feeType = 0;
+        _history.transactionType = "received";
+        await historyRepo.add(_history);
         res.statusCode = 200;
         res.json({
             message: "Success"

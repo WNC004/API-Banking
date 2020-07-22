@@ -78,16 +78,33 @@ router.post("/staffs/delete", (req, res) => {
 });
 
 
-router.post("/staffs/edit", (req, res) => {
+router.post("/staffs/edit", async(req, res) => {
     const id = req.body.staffId;
     const name = req.body.staffName;
     const email = req.body.staffEmail;
+    let emailDB = await staffRepo.loadByEmail(email);
+    let thisStaff = await staffRepo.getStaffById(id);
     const phone = req.body.phone;
+    let phoneDB = await staffRepo.loadByPhone(phone);
     console.log(id);
     console.log(name);
     console.log(email);
     console.log(phone);
 
+    if ((emailDB.length > 0 && email !== thisStaff[0].email) || (phoneDB.length > 0 && phone !== thisStaff[0].phone)) {
+        if (phoneDB.length > 0 && phone !== thisStaff[0].phone) {
+            res.statusCode = 204;
+            res.json({
+            message: "This phone does already exists"
+            });
+        } else if (emailDB.length > 0 && email !== thisStaff[0].email) {
+            res.statusCode = 202;
+            res.json({
+            message: "This email does already exists"
+            });
+        }
+    }
+    else {
     staffRepo
         .update(id, name, email, phone)
         .then(() => {
@@ -102,6 +119,7 @@ router.post("/staffs/edit", (req, res) => {
                 message: err
             });
         });
+    }
 });
 
 

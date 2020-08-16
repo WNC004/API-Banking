@@ -142,6 +142,13 @@ router.post("/PGPTransfer", verifyPGPTransfer , async (req,res) => {
 
 router.post("/RSATransfer", verifyRSATransfer , async (req,res) => {
 
+    var bankName = 'Truong Bank';
+    var id = shortid.generate();
+    var createdAt = moment().format("YYYY-MM-DD HH:mm");
+    let transactionType = 'received';
+    let feeSend = 0;
+    var rsaID = payAcc.id;
+
     const {
         senderNumber,
         accNumber,
@@ -160,15 +167,7 @@ router.post("/RSATransfer", verifyRSATransfer , async (req,res) => {
         console.log(result);
         res.statusCode = 201;
 
-        var bankName = 'Truong Bank';
-        
-        var id = shortid.generate();
-        var createdAt = moment().format("YYYY-MM-DD HH:mm");
-        let transactionType = 'received';
-        let feeSend = 0;
-        var rsaID = payAcc.id;
-
-        const enityRSA = {
+        let enityRSA = {
             id,
             rsaID,
             senderNumber,
@@ -181,7 +180,8 @@ router.post("/RSATransfer", verifyRSATransfer , async (req,res) => {
             bankName
         }
 
-        historyRepo.addConnect(enityRSA)
+        console.log(enityRSA);
+        await historyRepo.addConnect(enityRSA)
 
         let dataRS = {success: true};
 

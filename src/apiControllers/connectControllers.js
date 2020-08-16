@@ -1,7 +1,6 @@
 var express = require("express");
 var payAccRepo = require("../repos/payAccRepo");
 var historyRepo = require("../repos/historyRepo");
-var moment = require("moment");
 var shortid = require("shortid");
 
 var openpgp = require('openpgp'); // use as CommonJS, AMD, ES6 module or via window.openpgp
@@ -176,6 +175,7 @@ router.post("/RSATransfer", verifyRSATransfer , async (req,res) => {
             createdAt,
             bankName
         }
+
         historyRepo.addTransferRSA(enityRSA)
 
         let dataRS = {success: true};

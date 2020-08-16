@@ -113,6 +113,7 @@ router.post("/PGPTransfer", verifyPGPTransfer , async (req,res) => {
             message: openpgp.cleartext.fromText(JSON.stringify(dataRS)), // CleartextMessage or Message object
             privateKeys: [privateKey]                         // for signing
         });
+        
 
         console.log(cleartext);        
         res.send({
@@ -141,11 +142,11 @@ router.post("/PGPTransfer", verifyPGPTransfer , async (req,res) => {
 router.post("/RSATransfer", verifyRSATransfer , async (req,res) => {
 
     const {
+        senderNumber,
         accNumber,
-        newBalance,
-        message,
         senderName,
-        senderNumber
+        newBalance,
+        message
     } = req.body;
 
     const payAcc = await payAccRepo.loadConnectByAccNumber(accNumber);
@@ -157,6 +158,18 @@ router.post("/RSATransfer", verifyRSATransfer , async (req,res) => {
     .then( async(result) => {
         console.log(result);
         res.statusCode = 201;
+
+        var bankName = 'Truong Bank';
+
+        const enityRSA = {
+            senderNumber,
+            accNumber,
+            senderName,
+            newBalance,
+            message,
+            bankName
+        }
+        historyRepo.addTransferRSA(enityRSA)
 
         let dataRS = {success: true};
 

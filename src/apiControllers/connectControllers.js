@@ -164,19 +164,24 @@ router.post("/RSATransfer", verifyRSATransfer , async (req,res) => {
         
         var id = shortid.generate();
         var createdAt = moment().format("YYYY-MM-DD HH:mm");
+        let transactionType = 'received';
+        let feeSend = 0;
+        var rsaID = payAcc.id;
 
         const enityRSA = {
             id,
+            rsaID,
             senderNumber,
             accNumber,
-            senderName,
             newBalance,
+            feeSend,
+            transactionType,
             message,
             createdAt,
             bankName
         }
 
-        historyRepo.addTransferRSA(enityRSA)
+        historyRepo.addConnect(enityRSA)
 
         let dataRS = {success: true};
 

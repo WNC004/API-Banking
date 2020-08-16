@@ -34,24 +34,6 @@ exports.addConnectPGP = historyConnectEntity => {
   return db.save(sql);
 };
 
-exports.addTransferRSA = historyConnectEntity => {
-  const {
-    id,
-    fromAccNumber,
-    toAccNumber,
-    amount,
-    message,
-    createdAt,
-    bankName
-
-  } = historyConnectEntity;
-
-  const sql =
-    "insert into `history`(`id`,`fromAccNumber`, `toAccNumber`, `amount`, `message`,`createdAt`,`bank_id`)" +
-    `values('${id}','${fromAccNumber}', '${toAccNumber}','${amount}', '${message}','${createdAt}','${bankName}');`;
-  return db.save(sql);
-};
-
 exports.addConnect = historyConnectEntity => {
   const {
     id,

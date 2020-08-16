@@ -82,8 +82,6 @@ router.post("/PGPBank/users", verifyPGPBank, (req, res) => {
 })
 
 router.post("/PGPTransfer", verifyPGPTransfer , async (req,res) => {
-
-    // const {accNumber, newBalance, message, senderName,senderNumber} = req.body;
     
     const {
         accNumber,
@@ -105,6 +103,31 @@ router.post("/PGPTransfer", verifyPGPTransfer , async (req,res) => {
     .then( async(result) => {
         console.log(result);
         res.statusCode = 201;
+
+        const id = shortid.generate();
+        const createdAt = moment().format("YYYY-MM-DD HH:mm");
+        const transactionType = 'received';
+        const feeType = 0;
+        const payAccId = payAcc.id;
+        const bank_id = 'PGP Bank';
+        const fromAccNumber = senderNumber;
+        const toAccNumber = accNumber;
+        const amount = newBalance;
+    
+        const enity = {
+            id,
+            payAccId,
+            fromAccNumber,
+            toAccNumber,
+            amount,
+            feeType,
+            transactionType,
+            message,
+            createdAt,
+            bank_id
+        }
+
+        historyRepo.addConnect(enity);        
 
         let dataRS = {success: true, name: resultName[0].name};
 

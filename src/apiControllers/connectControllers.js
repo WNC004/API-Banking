@@ -96,6 +96,10 @@ router.post("/PGPTransfer", verifyPGPTransfer , async (req,res) => {
 
     const payAcc = await payAccRepo.loadConnectByAccNumber(accNumber);
     await console.log(payAcc);
+    
+    const idPayAcc = await payAccRepo.loadIdByAccNumber(accNumber);
+    console.log(idPayAcc);
+    
     var currentBalance = payAcc[0].balance + newBalance;
 
     payAccRepo
@@ -104,13 +108,11 @@ router.post("/PGPTransfer", verifyPGPTransfer , async (req,res) => {
         console.log(result);
         res.statusCode = 201;
         
-        const idPayAcc = payAccRepo.loadIdByAccNumber(accNumber);
-        
         const id = shortid.generate();
         const createdAt = moment().format("YYYY-MM-DD HH:mm");
         const transactionType = 'received';
         const feeType = 0;
-        const payAccId = idPayAcc;
+        const payAccId = idPayAcc[0].id;
         const bank_id = 'PGP Bank';
         const fromAccNumber = senderNumber;
         const toAccNumber = accNumber;

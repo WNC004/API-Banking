@@ -103,12 +103,13 @@ router.post("/PGPTransfer", verifyPGPTransfer , async (req,res) => {
     .then( async(result) => {
         console.log(result);
         res.statusCode = 201;
-
+        
+        const payAccTemp = payAccRepo.loadConnectByAccNumber(accNumber);
         const id = shortid.generate();
         const createdAt = moment().format("YYYY-MM-DD HH:mm");
         const transactionType = 'received';
         const feeType = 0;
-        const payAccId = payAcc.id;
+        const payAccId = payAccTemp.id;
         const bank_id = 'PGP Bank';
         const fromAccNumber = senderNumber;
         const toAccNumber = accNumber;

@@ -94,6 +94,10 @@ exports.loadConnectByAccNumber = accNumber => {
   return db.load(sql);
 };
 
+exports.loadIdByAccNumber = accNumber => {
+  var sql = `select id from payacc where accNumber = '${accNumber}'`;
+  return db.load(sql);
+};
 
 exports.loadByOpen = openStatus => {
   var sql = `select * from payacc where status = '${openStatus}'`;

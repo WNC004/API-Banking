@@ -12,7 +12,9 @@ method: POST
 headers: 
 {
   ts: thời gian gửi gói tin được đổi thành timestamp,
-  partner_code: code dùng để xác nhận gói tin có được gửi từ ngân hàng liên kết hay không 
+  
+  partner_code: code dùng để xác nhận gói tin có được gửi từ ngân hàng liên kết hay không ,
+  
   sign: chữ ký được hash bởi gói tin và thời gian gửi dùng để xác nhận chữ ký có được gửi từ ngân hàng liên kết hay không
 }
 
@@ -65,7 +67,9 @@ method: POST
 headers: 
 {
   ts: thời gian gửi gói tin được đổi thành timestamp,
-  partner_code: code dùng để xác nhận gói tin có được gửi từ ngân hàng liên kết hay không 
+  
+  partner_code: code dùng để xác nhận gói tin có được gửi từ ngân hàng liên kết hay không,
+  
   sign: chữ ký được hash bởi gói tin và thời gian gửi dùng để xác nhận chữ ký có được gửi từ ngân hàng liên kết hay không
 }
 

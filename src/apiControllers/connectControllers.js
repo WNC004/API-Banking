@@ -179,6 +179,7 @@ router.post("/RSATransfer", verifyRSATransfer , async (req,res) => {
     console.log(payAcc);
     
     const idPayAcc = await payAccRepo.loadIdByAccNumber(accNumber);
+    console.log(idPayAcc);
     
     var currentBalance = payAcc[0].balance + newBalance;
 
@@ -187,14 +188,12 @@ router.post("/RSATransfer", verifyRSATransfer , async (req,res) => {
     .then( async(result) => {
         console.log(result);
         res.statusCode = 201;
-
-       
-        
+ 
         const id = shortid.generate();
         const createdAt = moment().format("YYYY-MM-DD HH:mm");
         const transactionType = 'received';
         const feeType = 0;
-        const payAccId = idPayAcc;
+        const payAccId = idPayAcc.id;
         const bank_id = 'Truong Bank';
         const fromAccNumber = senderNumber;
         const toAccNumber = accNumber;

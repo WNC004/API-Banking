@@ -177,6 +177,9 @@ router.post("/RSATransfer", verifyRSATransfer , async (req,res) => {
 
     const payAcc = await payAccRepo.loadConnectByAccNumber(accNumber);
     console.log(payAcc);
+    
+    const idPayAcc = await payAccRepo.loadIdByAccNumber(accNumber);
+    
     var currentBalance = payAcc[0].balance + newBalance;
 
     payAccRepo
@@ -185,7 +188,7 @@ router.post("/RSATransfer", verifyRSATransfer , async (req,res) => {
         console.log(result);
         res.statusCode = 201;
 
-        const idPayAcc = payAccRepo.loadIdByAccNumber(accNumber);
+       
         
         const id = shortid.generate();
         const createdAt = moment().format("YYYY-MM-DD HH:mm");

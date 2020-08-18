@@ -128,7 +128,7 @@ status: 400
 
 {
 
-Request expire!
+'Request expire!'
 
 }
 
@@ -144,15 +144,21 @@ cleartext
 
 status: 201
 
-data:{
+data:
 
-Thông tin ngân hàng liên kết yêu 
+{
+
+cleartext 
 
 }
 
 Lưu ý: 
 
 Ngân hàng liên kết cung cấp 1 khoá secretKey dùng để tạo chữ ký và không được chia sẻ cho ai khác
+
+Ngân hàng liên kết cung cấp một public key dùng để xác nhận gói tin yêu cầu chuyển tiền được ký bất đối xứng
+
+Ngân hàng nguồn cung cấp một public key để ngân hàng liên kết để xác nhận gói tin kết quả thực giao dịch được ký bất đối xứng
 
 Đối với các ngân hàng PGP
 
@@ -316,4 +322,7 @@ Lưu ý:
 
 Ngân hàng liên kết cung cấp 1 khoá secretKey dùng để tạo chữ ký và không được chia sẻ cho ai khác
 
-Ngân hàng liên kết và ngân hàng nguồn chia sẻ một cặp key để ký bất đối xứng lên giao dịch
+Ngân hàng liên kết cung cấp một public key dùng để xác nhận gói tin yêu cầu chuyển tiền được ký bất đối xứng
+
+Ngân hàng nguồn cung cấp một public key để ngân hàng liên kết để xác nhận gói tin kết quả thực giao dịch được ký bất đối xứng
+

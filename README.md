@@ -75,7 +75,7 @@ Lưu ý:
 
 Ngân hàng liên kết cung cấp 1 khoá secretKey dùng để tạo chữ ký và không được chia sẻ cho ai khác
 
-API chuyển tiền
+API nộp tiền vào tài 
 
 url: https://wnc-api-banking.herokuapp.com/api/RSATransfer
 
@@ -253,7 +253,7 @@ Ngân hàng liên kết cung cấp 1 khoá secretKey dùng để tạo chữ ký
 Ngân hàng liên kết và ngân hàng nguồn chia sẻ một cặp key để ký bất đối xứng lên giao dịch
 
 
-API chuyển tiền
+API nộp tiền vào tài kh
 
 url: https://wnc-api-banking.herokuapp.com/api/PGPTransfer
 

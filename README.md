@@ -67,7 +67,7 @@ data:
 
 {
 
-Thông tin ngân hàng liên kết yêu 
+Thông tin ngân hàng liên kết yêu cầu
 
 }
 
@@ -97,7 +97,15 @@ body:
 
 {
 
-  accountID: số tài khoản của tài khoản cần truy vấn thông tin
+  accountID: số tài khoản của tài khoản cần chuyển tiền
+
+  newBalance: số tiền cần chuyển
+  
+  message: nội dung thưc hiện giao dịch
+  
+  senderName: tên chủ tài khoản người chuyển
+  
+  senderNumber: số tài khoản của tài khoản người chuyển
 
 }
 
@@ -184,7 +192,15 @@ body:
 
 {
 
-  accountID: số tài khoản của tài khoản cần truy vấn thông tin
+  accountID: số tài khoản của tài khoản cần chuyển tiền
+
+  newBalance: số tiền cần chuyển
+  
+  message: nội dung thưc hiện giao dịch
+  
+  senderName: tên chủ tài khoản người chuyển
+  
+  senderNumber: số tài khoản của tài khoản người chuyển
   
 }
 

@@ -55,14 +55,14 @@ exports.addConnect = historyConnectEntity => {
 };
 
 exports.loadByPayAccId = payAccId => {
-  // var sql = `select * from history where payAccId = '${payAccId}'`;
-  var sql = `SELECT *  FROM history where payAccId = '${payAccId}' AND (Cast(createdAt as datetime) > DATE_ADD(NOW(), INTERVAL - 30 DAY));`
+  var sql = `select * from history where payAccId = '${payAccId}'`;
+  // var sql = `SELECT *  FROM history where payAccId = '${payAccId}' AND (Cast(createdAt as datetime) > DATE_ADD(NOW(), INTERVAL - 30 DAY));`
   return db.load(sql);
 };
 
 exports.loadByPayAccNumber = accNumber => {
-  // var sql = `select * from history where payAccId = '${payAccId}'`;
-  var sql = `SELECT *  FROM history where (fromAccNumber = ${accNumber} or toAccNumber = ${accNumber}) AND (Cast(createdAt as datetime) > DATE_ADD(NOW(), INTERVAL - 30 DAY));`
+  var sql = `select * from history where payAccId = '${accNumber}'`;
+  // var sql = `SELECT *  FROM history where (fromAccNumber = ${accNumber} or toAccNumber = ${accNumber}) AND (Cast(createdAt as datetime) > DATE_ADD(NOW(), INTERVAL - 30 DAY));`
   return db.load(sql);
 };
 

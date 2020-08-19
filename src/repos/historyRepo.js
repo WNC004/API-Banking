@@ -81,6 +81,7 @@ exports.sumReceiced = (bankName, from, to) =>{
   if(to!=null && to!=undefined && to!=""){
     sql = sql + `and createdAt <= '${to}' `;
   }
+  sql = sql +`AND (Cast(createdAt as datetime) > DATE_ADD(NOW(), INTERVAL - 30 DAY));`;
   console.log(sql);
   return db.load(sql);
 }
@@ -101,6 +102,7 @@ exports.sumSent = (bankName, from, to) =>{
   if(to!=null && to!=undefined && to!=""){
     sql = sql + `and createdAt <= '${to}' `;
   }
+  sql = sql +`AND (Cast(createdAt as datetime) > DATE_ADD(NOW(), INTERVAL - 30 DAY));`;
   console.log(sql);
   return db.load(sql);
 }
@@ -120,6 +122,7 @@ exports.getReceiced = (bankName, from, to) =>{
   if(to!=null && to!=undefined && to!=""){
     sql = sql + `and createdAt <= '${to}' `;
   }
+  sql = sql +`AND (Cast(createdAt as datetime) > DATE_ADD(NOW(), INTERVAL - 30 DAY));`;
   console.log(sql);
   return db.load(sql);
 }
@@ -140,6 +143,7 @@ exports.getSent = (bankName, from, to) =>{
   if(to!=null && to!=undefined && to!=""){
     sql = sql + `and createdAt <= '${to}' `;
   }
+  sql = sql +`AND (Cast(createdAt as datetime) > DATE_ADD(NOW(), INTERVAL - 30 DAY));`;
   console.log(sql);
   return db.load(sql);
 }

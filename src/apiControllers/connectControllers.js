@@ -92,10 +92,10 @@ router.post("/PGPTransfer", verifyPGPTransfer , async (req,res) => {
     } = req.body;
 
     const resultName = await payAccRepo.loadCustomerNameByAccNumber(accNumber);
-    await console.log(resultName);
+    console.log(resultName);
 
     const payAcc = await payAccRepo.loadConnectByAccNumber(accNumber);
-    await console.log(payAcc);
+    console.log(payAcc);
     
     const idPayAcc = await payAccRepo.loadIdByAccNumber(accNumber);
     console.log(idPayAcc);

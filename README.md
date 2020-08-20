@@ -1,9 +1,11 @@
 # API-Banking
 wnc
 
-Đối với các ngân hàng RSA
+# API sử dụng cơ chế mã hoá PGP
 
-API truy vấn thông tin
+# Đối với các ngân hàng RSA
+
+# API truy vấn thông tin
 
 url: https://wnc-api-banking.herokuapp.com/api/RSABank/users
 
@@ -75,7 +77,7 @@ Lưu ý:
 
 Ngân hàng liên kết cung cấp 1 khoá secretKey dùng để tạo chữ ký và không được chia sẻ cho ai khác
 
-API nộp tiền vào tài 
+# API nộp tiền vào tài khoản
 
 url: https://wnc-api-banking.herokuapp.com/api/RSATransfer
 
@@ -168,9 +170,9 @@ Ngân hàng liên kết cung cấp một public key dùng để xác nhận gói
 
 Ngân hàng nguồn cung cấp một public key để ngân hàng liên kết để xác nhận gói tin kết quả thực giao dịch được ký bất đối xứng
 
-Đối với các ngân hàng PGP
+# Đối với các ngân hàng PGP
 
-API truy vấn thông tin
+# API truy vấn thông tin
 
 url: https://wnc-api-banking.herokuapp.com/api/PGPBank/users
 
@@ -253,7 +255,7 @@ Ngân hàng liên kết cung cấp 1 khoá secretKey dùng để tạo chữ ký
 Ngân hàng liên kết và ngân hàng nguồn chia sẻ một cặp key để ký bất đối xứng lên giao dịch
 
 
-API nộp tiền vào tài kh
+# API nộp tiền vào tài khoản 
 
 url: https://wnc-api-banking.herokuapp.com/api/PGPTransfer
 
